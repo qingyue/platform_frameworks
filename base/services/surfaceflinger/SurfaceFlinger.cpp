@@ -392,7 +392,8 @@ bool SurfaceFlinger::threadLoop()
     handlePageFlip();
 
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
-    if (LIKELY(hw.canDraw() && !isFrozen())) {
+    if (LIKELY(hw.canDraw() && !isFrozen()))
+    {
         // repaint the framebuffer (if needed)
 #ifdef FSL_EPDC_FB
         getDirtyGroup();
@@ -425,12 +426,13 @@ bool SurfaceFlinger::threadLoop()
 #else    
 
 #ifdef USE_COMPOSITION_BYPASS
-        if (handleBypassLayer()) {
+        if (handleBypassLayer())
+        {
             unlockClients();
             return true;
         }
 #endif
-    
+
         const int index = hw.getCurrentBufferIndex();
         GraphicLog& logger(GraphicLog::getInstance());
 
@@ -440,17 +442,18 @@ bool SurfaceFlinger::threadLoop()
         handleRepaint();
         logger.log(GraphicLog::SF_COMPOSITION_COMPLETE, index);
 
-	// call glFinish and postfb only when actual repaint is done
-	if (!mInvalidRegion.isEmpty()) {
+        // call glFinish and postfb only when actual repaint is done
+        if (!mInvalidRegion.isEmpty())
+        {
             // inform the h/w that we're done compositing
             hw.compositionComplete();
             // release the clients before we flip ('cause flip might block)
 
             postFramebuffer();
-	}
+        }
 #endif
 
-        
+
     } else {
         // pretend we did the post
         // comment out the compisitionComplete() due to clock on in early suspend
@@ -569,6 +572,7 @@ void SurfaceFlinger::releaseDirtyGroup()
     delete []mReupdateDirtyReglist;
 }
 
+// get parameters from client to see if we need to use special update or not.
 void SurfaceFlinger::EinkOptPostFramebuffer()
 {
     bool bNeedPartialupdate = false;

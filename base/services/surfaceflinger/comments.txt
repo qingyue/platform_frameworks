@@ -1,0 +1,21 @@
+1. check layer to see if we need any special update by SPECIAL_MODE_MASK. mNeedspecialupdate
+2. also check to see if we need partial update or not by dirty region mode. bNeedPartialupdate
+
+after that, send parameter to framebuffer by calling postFramebuffer
+
+ const DisplayHardware& hw(graphicPlane(0).displayHardware());
+ hw.flip(pInvalidRegion,rectList, modelist, count);
+
+
+
+    if (mFlags & PARTIAL_UPDATES)
+    {
+        mNativeWindow->setUpdateRectangle(rectList, modelist, count);
+    }
+
+
+    finally call
+    fbDev->setUpdateRect
+
+
+surfaceflinger->displayHardware->nativeWindow->fbDev->
