@@ -19,3 +19,8 @@ after that, send parameter to framebuffer by calling postFramebuffer
 
 
 surfaceflinger->displayHardware->nativeWindow->fbDev->
+
+
+1. fb_setUpdateRect stores the update region and update mode.
+2. in fb_post, the update_to_display uses the stored value to update screen.
+
