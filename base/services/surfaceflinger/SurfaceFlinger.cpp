@@ -539,7 +539,7 @@ void SurfaceFlinger::getDirtyGroup()
                 {
                     if(true == mRegionsDirtyReglist[i].DeleteDirtyRegionNode(pDirtyRegNode->mDirtyRegion.getBounds()))
                     {
-                        mNeedspecialupdate --;
+                        // mNeedspecialupdate --;
                         //LOGI("delete special region layer=%d, mRegionsDirtyReglist=%d \n",i,mRegionsDirtyReglist[i].mDirtyRegListLength);
                     }
                 }
