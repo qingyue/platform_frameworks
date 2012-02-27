@@ -78,6 +78,8 @@ public final class IconMenuItemView extends TextView implements MenuView.ItemVie
         mTextAppearance = a.getResourceId(com.android.internal.R.styleable.
                                           MenuView_itemTextAppearance, -1);
         mTextAppearanceContext = context;
+
+		IconMenuItemView.this.setTextColor(Color.BLACK);
         
         a.recycle();
     }
