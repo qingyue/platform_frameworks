@@ -35,6 +35,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.View;
+import android.graphics.Color;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
