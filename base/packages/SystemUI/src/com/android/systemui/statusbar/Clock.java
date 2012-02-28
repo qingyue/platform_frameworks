@@ -35,7 +35,6 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.View;
-import android.graphics.Color;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -88,7 +87,6 @@ public class Clock extends TextView {
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
 
-		this.setTextColor(Color.rgb(0, 0, 0));
         // NOTE: It's safe to do these after registering the receiver since the receiver always runs
         // in the main thread, therefore the receiver can't run before this method returns.
 
