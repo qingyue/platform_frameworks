@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.widget.TextView;
 import android.text.Layout;
+import android.graphics.Color;
 
 /**
  * The item view for each item in the {@link IconMenuView}.  
