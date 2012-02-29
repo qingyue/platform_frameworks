@@ -16,9 +16,10 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+	<!--
 	<item
 		android:state_focused="false"
-		android:drawable="@drawable/highlight_normal" />
+		android:drawable="@drawable/highlight_normal" /> -->
 
     <item
         android:state_pressed="true"
