@@ -37,7 +37,7 @@
     <color name="black">#ff000000</color>
     <color name="transparent">#00000000</color>
     <color name="background_dark">#ff000000</color>
-    <color name="bright_foreground_dark">#ffffffff</color>
+    <color name="bright_foreground_dark">#ff000000</color>
     <color name="bright_foreground_dark_disabled">#80ffffff</color>
     <color name="bright_foreground_dark_inverse">#ff000000</color>
     <color name="dim_foreground_dark">#bebebe</color>
