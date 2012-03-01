@@ -685,7 +685,7 @@
     </style>
 
     <style name="TextAppearance.Widget.IconMenu.Item" parent="TextAppearance.Small">
-        <item name="android:textColor">?textColorPrimary</item>
+        <item name="android:textColor">?textColorPrimaryInverse</item>
     </style>
 
     <style name="TextAppearance.Widget.EditText">
