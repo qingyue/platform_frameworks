@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.widget.TextView;
 import android.text.Layout;
-import android.graphics.Color;
 
 /**
  * The item view for each item in the {@link IconMenuView}.  
@@ -79,16 +78,12 @@ public final class IconMenuItemView extends TextView implements MenuView.ItemVie
         mTextAppearance = a.getResourceId(com.android.internal.R.styleable.
                                           MenuView_itemTextAppearance, -1);
         mTextAppearanceContext = context;
-
-		IconMenuItemView.this.setTextColor(Color.BLACK);
         
         a.recycle();
     }
     
     public IconMenuItemView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-
-		IconMenuItemView.this.setTextColor(Color.BLACK);
     }
 
     /**

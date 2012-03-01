@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.graphics.Color;
 
 import java.util.ArrayList;
 
@@ -292,6 +293,8 @@ public final class IconMenuView extends ViewGroup implements ItemInvoker, MenuVi
 
         // This class is the invoker for all its item views 
         itemView.setItemInvoker(this);
+
+		itemView.setTextColor(Color.BLACK);
         
         addView(itemView, itemView.getTextAppropriateLayoutParams());
     }
