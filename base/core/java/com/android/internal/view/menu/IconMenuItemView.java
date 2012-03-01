@@ -87,6 +87,8 @@ public final class IconMenuItemView extends TextView implements MenuView.ItemVie
     
     public IconMenuItemView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+
+		IconMenuItemView.this.setTextColor(Color.BLACK);
     }
 
     /**
