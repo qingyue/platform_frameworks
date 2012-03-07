@@ -32,7 +32,7 @@
         android:id="@+id/label"
         android:textSize="16sp" 
         android:textStyle="bold" 
-        android:textColor="#FF000000" 
+        android:textColor="#FFFFFFFF" 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/keyguard_label_text" />
