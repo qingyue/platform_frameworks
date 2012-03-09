@@ -50,7 +50,7 @@ public final class ExpandedMenuView extends ListView implements ItemInvoker, Men
         mAnimations = a.getResourceId(com.android.internal.R.styleable.MenuView_windowAnimationStyle, 0);
         a.recycle();
 
-		setSelector(R.drawable.menu_selector);
+		setSelector(com.android.internal.R.drawable.menu_selector);
         setOnItemClickListener(this);
     }
 
