@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:textColor="#ffffffff"
+            android:textColor="#ff000000"
             android:singleLine="true"
             android:duplicateParentState="true"
             android:ellipsize="marquee"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/title"
             android:layout_alignParentLeft="true"
-            android:textColor="#ffffffff"
+            android:textColor="#ff000000"
             android:singleLine="true"
             android:duplicateParentState="true" />
 
