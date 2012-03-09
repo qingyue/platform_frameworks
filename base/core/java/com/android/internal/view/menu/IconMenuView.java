@@ -293,7 +293,7 @@ public final class IconMenuView extends ViewGroup implements ItemInvoker, MenuVi
 
         // This class is the invoker for all its item views 
         itemView.setItemInvoker(this);
-		itemView.setBackgroundColor(Color.BLACK);
+		itemView.setTextColor(Color.BLACK);
         
         addView(itemView, itemView.getTextAppropriateLayoutParams());
     }

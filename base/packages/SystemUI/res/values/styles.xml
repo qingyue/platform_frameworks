@@ -17,7 +17,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="TextAppearance.StatusBar.Title" parent="@android:style/TextAppearance.StatusBar">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@drawable/notification_header_text_color</item>
     </style>

@@ -17,7 +17,7 @@
  */
 -->
 <resources>
-    <drawable name="shade_bgcolor">#ffdddddd</drawable>
+    <drawable name="shade_bgcolor">#ffffffff</drawable>
     <drawable name="notification_header_text_color">#ff000000</drawable>
     <drawable name="notification_number_text_color">#ffffffff</drawable>
 </resources>
