@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.graphics.Color;
 
 /**
  * The item view for each item in the ListView-based MenuViews.
@@ -77,6 +78,7 @@ public class ListMenuItemView extends LinearLayout implements MenuView.ItemView 
             mTitleView.setTextAppearance(mTextAppearanceContext,
                                          mTextAppearance);
         }
+		mTitleView.setTextColor(Color.BLACK);
         
         mShortcutView = (TextView) findViewById(com.android.internal.R.id.shortcut);
     }

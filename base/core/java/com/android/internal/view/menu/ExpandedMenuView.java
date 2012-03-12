@@ -52,7 +52,6 @@ public final class ExpandedMenuView extends ListView implements ItemInvoker, Men
         a.recycle();
 
 		setBackgroundColor(Color.WHITE);
-		setSelector(com.android.internal.R.drawable.menu_selector);
         setOnItemClickListener(this);
     }
 
