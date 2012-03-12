@@ -1099,7 +1099,14 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
      */
     public static final int EINK_CONVERT_MODE_MASK = 0x00000400;
 
-
+    /**
+     * The mask of default AUTO update policy
+     */
+    public static final int EINK_ONYX_AUTO_MASK = 0x01000000;
+    /**
+     * The mask of default GU/GC intervally update policy
+     */
+    public static final int EINK_ONYX_GC_MASK = 0x02000000;
 
     public static final int UI_DEFAULT_MODE = EINK_CONVERT_MODE_NOCONVERT|EINK_INVERT_MODE_NOINVERT|EINK_DITHER_MODE_NODITHER|EINK_COMBINE_MODE_NOCOMBINE|
                                               EINK_WAIT_MODE_NOWAIT|EINK_UPDATE_MODE_PARTIAL|EINK_AUTO_MODE_REGIONAL|EINK_WAVEFORM_MODE_AUTO;
@@ -5345,6 +5352,24 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
     public int numOfAvailableBuffer(boolean lock) {
         final ViewParentEink p = (ViewParentEink)mParent;
         return p.numOfAvailableBuffer(this,lock);
+    }
+
+    /**
+     * setup E-Ink display's default update policy
+     *
+     * @param updatePolicy 
+     * @param guInterval
+     */
+    public void setUpdatePolicy(int updatePolicy, int guInterval)
+    {
+        if ((updatePolicy & EINK_ONYX_GC_MASK) != 0) {
+            // EINK_ONYX_GC_INTERVAL_MASK = 0x00FF0000;
+            updatePolicy |= ((guInterval & 0xFF) << 16);
+        }
+        else {
+            assert((updatePolicy & EINK_ONYX_AUTO_MASK) != 0); 
+        }
+        invalidate(updatePolicy);
     }
     
     /**
