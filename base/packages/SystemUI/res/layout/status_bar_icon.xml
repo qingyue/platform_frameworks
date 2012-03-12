@@ -21,8 +21,8 @@
 <!-- The icons are a fixed size so an app can't mess everything up with bogus images -->
 <!-- TODO: the icons are hard coded to 25x25 pixels.  Their size should come froem a theme -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:layout_width="25dp" 
-    android:layout_height="25dp"
+    android:layout_width="35dp" 
+    android:layout_height="35dp"
     >
 
     <com.android.systemui.statusbar.AnimatedImageView android:id="@+id/image"
@@ -37,7 +37,7 @@
         android:layout_marginRight="1dp"
         android:layout_marginBottom="1dp"
         android:textSize="10sp"
-        android:textColor="#ffffffff"
+        android:textColor="#ff000000"
         android:background="@drawable/ic_notification_overlay"
         android:gravity="center"
         android:textStyle="bold"
