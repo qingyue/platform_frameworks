@@ -26,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.graphics.Color;
 
 import com.android.internal.view.menu.MenuBuilder.ItemInvoker;
 
@@ -50,6 +51,7 @@ public final class ExpandedMenuView extends ListView implements ItemInvoker, Men
         mAnimations = a.getResourceId(com.android.internal.R.styleable.MenuView_windowAnimationStyle, 0);
         a.recycle();
 
+		setBackgroundColor(Color.WHITE);
 		setSelector(com.android.internal.R.drawable.menu_selector);
         setOnItemClickListener(this);
     }
