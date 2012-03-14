@@ -30,7 +30,8 @@
         android:paddingRight="12dip"
         android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+		android:textColor="#ff000000"/>
 
     <!-- List view containing list of dangerous permissions categorized by groups. -->
     <LinearLayout
@@ -74,7 +75,8 @@
                 android:paddingLeft="36dip"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+				android:textColor="#ff000000"/>
 
             <ImageView
                 android:id="@id/show_more_icon"
