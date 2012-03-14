@@ -39,7 +39,8 @@
         android:paddingLeft="6dip"
         android:layout_toRightOf="@id/perm_icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+		android:textColor="#ff000000"/>
 
     <TextView
         android:id="@+id/permission_list"
@@ -50,6 +51,7 @@
         android:layout_below="@id/permission_group"
         android:layout_toRightOf="@id/perm_icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	    android:textColor="#ff000000"/>
 
 </RelativeLayout>
