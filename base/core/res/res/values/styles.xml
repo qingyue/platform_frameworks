@@ -634,7 +634,7 @@
     <style name="TextAppearance.DialogWindowTitle">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">?textColorPrimary</item>
+        <item name="android:textColor">?textColorPrimaryInverse</item>
     </style>
 
     <style name="TextAppearance.Large">

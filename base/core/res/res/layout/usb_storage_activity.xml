@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:gravity="center"
-		android:background="#ff000000"
+		android:textColor="#ff000000"
         android:text="@string/usb_storage_title" />
 
     <TextView android:id="@+id/message"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:gravity="center"
-		android:background="#ff000000"
+		android:textColor="#ff000000"
         android:text="@string/usb_storage_message" />
 
     <RelativeLayout
