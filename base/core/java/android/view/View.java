@@ -45,6 +45,7 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.util.AttributeSet;
@@ -65,6 +66,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
+import android.view.IWindowManager;
 import android.widget.ScrollBarDrawable;
 
 import java.lang.ref.SoftReference;
@@ -9902,5 +9904,40 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
             }
         }
 
+    }
+
+     /**
+     * Retrieve the current screen orientation, constants as per
+     * {@link android.view.Surface}.
+     */
+    public static int getWindowRotation()
+    {
+        try {
+            IWindowManager windowService = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+            return windowService.getRotation();
+        } catch (Throwable tr) {
+            Log.w("View", tr);
+        }
+        return android.view.Surface.ROTATION_0;
+    }
+
+    // These can only be called with the SET_ORIENTATION permission.
+    /**
+     * Change the current screen rotation, constants as per
+     * {@link android.view.Surface}.
+     * @param rotation the intended rotation.
+     * @param alwaysSendConfiguration Flag to force a new configuration to
+     * be evaluated.  This can be used when there are other parameters in
+     * configuration that are changing.
+     * @param animFlags Animation flags as per {@link android.view.Surface}.
+     */
+    public static void setWindowRotation(int rotation, boolean alwaysSendConfiguration, int animFlags)
+    {
+        try {
+            IWindowManager windowService = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+            windowService.setRotation(rotation, alwaysSendConfiguration, animFlags);
+        } catch (Throwable tr) {
+            Log.w("View", tr);
+        }
     }
 }

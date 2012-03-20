@@ -2604,6 +2604,9 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
 
     private void setText(CharSequence text, BufferType type,
                          boolean notifyBefore, int oldlen) {
+        // force DW E-Ink Update
+        invalidate(UI_DW_MODE);
+
         if (text == null) {
             text = "";
         }
