@@ -4550,19 +4550,17 @@ public class WindowManagerService extends IWindowManager.Stub
             mRequestedRotation = rotation;
             mLastRotationFlags = animFlags;
         }
+
         if (mForcedAppOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             if (DEBUG_ORIENTATION) Slog.v(TAG, "Overwriting rotation value from " + rotation);
             if (DEBUG_ORIENTATION) Slog.v(TAG, "Forced App Orientation: " + mForcedAppOrientation);
             //rotation = mPolicy.rotationForOrientationLw(mForcedAppOrientation,
             //        mRotation, mDisplayEnabled);
-            rotation = mPolicy.rotationForOrientationLw(rotation,
-                    mRotation, mDisplayEnabled);
         }
         else {
             if (DEBUG_ORIENTATION) Slog.v(TAG, "using user specified rotation value: " + rotation);
-            rotation = mPolicy.rotationForOrientationLw(rotation,
-                    mRotation, mDisplayEnabled);
         }
+
         if (DEBUG_ORIENTATION) Slog.v(TAG, "new rotation is set to " + rotation);
         changed = mDisplayEnabled && mRotation != rotation;
 
