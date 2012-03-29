@@ -4516,6 +4516,16 @@ public class WindowManagerService extends IWindowManager.Stub
         setRotationUnchecked(rotation, alwaysSendConfiguration, animFlags);
     }
 
+    public void setRotationEx(int rotation,
+            boolean alwaysSendConfiguration, int animFlags) {
+        if (!checkCallingPermission(android.Manifest.permission.SET_ORIENTATION,
+                "setRotation()")) {
+            throw new SecurityException("Requires SET_ORIENTATION permission");
+        }
+
+        setRotationUncheckedEx(rotation, alwaysSendConfiguration, animFlags);
+    }
+
     public void setRotationUnchecked(int rotation,
             boolean alwaysSendConfiguration, int animFlags) {
         if(DEBUG_ORIENTATION) Slog.v(TAG,
@@ -4525,6 +4535,24 @@ public class WindowManagerService extends IWindowManager.Stub
         boolean changed;
         synchronized(mWindowMap) {
             changed = setRotationUncheckedLocked(rotation, animFlags);
+        }
+
+        if (changed || alwaysSendConfiguration) {
+            sendNewConfiguration();
+        }
+
+        Binder.restoreCallingIdentity(origId);
+    }
+
+    public void setRotationUncheckedEx(int rotation,
+            boolean alwaysSendConfiguration, int animFlags) {
+        if(DEBUG_ORIENTATION) Slog.v(TAG,
+                "alwaysSendConfiguration set to "+alwaysSendConfiguration);
+
+        long origId = Binder.clearCallingIdentity();
+        boolean changed;
+        synchronized(mWindowMap) {
+            changed = setRotationUncheckedLockedEx(rotation, animFlags);
         }
 
         if (changed || alwaysSendConfiguration) {
@@ -4550,19 +4578,59 @@ public class WindowManagerService extends IWindowManager.Stub
             mRequestedRotation = rotation;
             mLastRotationFlags = animFlags;
         }
-        if (mForcedAppOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
-            if (DEBUG_ORIENTATION) Slog.v(TAG, "Overwriting rotation value from " + rotation);
-            if (DEBUG_ORIENTATION) Slog.v(TAG, "Forced App Orientation: " + mForcedAppOrientation);
-            //rotation = mPolicy.rotationForOrientationLw(mForcedAppOrientation,
-            //        mRotation, mDisplayEnabled);
-            rotation = mPolicy.rotationForOrientationLw(rotation,
-                    mRotation, mDisplayEnabled);
+
+        if (DEBUG_ORIENTATION) Slog.v(TAG, "Overwriting rotation value from " + rotation);
+        rotation = mPolicy.rotationForOrientationLw(mForcedAppOrientation,
+                mRotation, mDisplayEnabled);
+
+        if (DEBUG_ORIENTATION) Slog.v(TAG, "new rotation is set to " + rotation);
+        changed = mDisplayEnabled && mRotation != rotation;
+
+        if (changed) {
+            if (DEBUG_ORIENTATION) Slog.v(TAG,
+                    "Rotation changed to " + rotation
+                    + " from " + mRotation
+                    + " (forceApp=" + mForcedAppOrientation
+                    + ", req=" + mRequestedRotation + ")");
+            mRotation = rotation;
+            mWindowsFreezingScreen = true;
+            mH.removeMessages(H.WINDOW_FREEZE_TIMEOUT);
+            mH.sendMessageDelayed(mH.obtainMessage(H.WINDOW_FREEZE_TIMEOUT),
+                    2000);
+            mWaitingForConfig = true;
+            mLayoutNeeded = true;
+            startFreezingDisplayLocked();
+            Slog.i(TAG, "Setting rotation to " + rotation + ", animFlags=" + animFlags);
+            mInputManager.setDisplayOrientation(0, rotation);
+            if (mDisplayEnabled) {
+                Surface.setOrientation(0, rotation, animFlags);
+            }
+            for (int i=mWindows.size()-1; i>=0; i--) {
+                WindowState w = mWindows.get(i);
+                if (w.mSurface != null) {
+                    w.mOrientationChanging = true;
+                }
+            }
+            for (int i=mRotationWatchers.size()-1; i>=0; i--) {
+                try {
+                    mRotationWatchers.get(i).onRotationChanged(rotation);
+                } catch (RemoteException e) {
+                }
+            }
+        } //end if changed
+
+        return changed;
+    }
+
+    public boolean setRotationUncheckedLockedEx(int rotation, int animFlags) {
+        boolean changed;
+        if (rotation == WindowManagerPolicy.USE_LAST_ROTATION) {
+            rotation = mRequestedRotation;
+        } else {
+            mRequestedRotation = rotation;
+            mLastRotationFlags = animFlags;
         }
-        else {
-            if (DEBUG_ORIENTATION) Slog.v(TAG, "using user specified rotation value: " + rotation);
-            rotation = mPolicy.rotationForOrientationLw(rotation,
-                    mRotation, mDisplayEnabled);
-        }
+
         if (DEBUG_ORIENTATION) Slog.v(TAG, "new rotation is set to " + rotation);
         changed = mDisplayEnabled && mRotation != rotation;
 

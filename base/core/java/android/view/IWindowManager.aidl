@@ -144,6 +144,11 @@ interface IWindowManager
      * @param animFlags Animation flags as per {@link android.view.Surface}.
      */
     void setRotation(int rotation, boolean alwaysSendConfiguration, int animFlags);
+    /**
+     * original setRotation cant work properly for our use, so add this extra method, 
+     * not to interfere with original system
+     */
+    void setRotationEx(int rotation, boolean alwaysSendConfiguration, int animFlags);
 
     /**
      * Retrieve the current screen orientation, constants as per

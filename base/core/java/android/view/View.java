@@ -9937,8 +9937,8 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
     {
         try {
             IWindowManager windowService = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
-            windowService.setRotation(rotation, alwaysSendConfiguration, animFlags);
-            Log.d("View", "setRotation: " + rotation);
+            windowService.setRotationEx(rotation, alwaysSendConfiguration, animFlags);
+            Log.d("View", "setRotationEx: " + rotation);
         } catch (Throwable tr) {
             Log.w("View", tr);
         }
