@@ -4518,11 +4518,6 @@ public class WindowManagerService extends IWindowManager.Stub
 
     public void setRotationEx(int rotation,
             boolean alwaysSendConfiguration, int animFlags) {
-        if (!checkCallingPermission(android.Manifest.permission.SET_ORIENTATION,
-                "setRotation()")) {
-            throw new SecurityException("Requires SET_ORIENTATION permission");
-        }
-
         setRotationUncheckedEx(rotation, alwaysSendConfiguration, animFlags);
     }
 
