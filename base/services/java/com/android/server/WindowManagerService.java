@@ -4574,9 +4574,9 @@ public class WindowManagerService extends IWindowManager.Stub
             mLastRotationFlags = animFlags;
         }
 
-       // if (DEBUG_ORIENTATION) Slog.v(TAG, "Overwriting rotation value from " + rotation);
-       // rotation = mPolicy.rotationForOrientationLw(mForcedAppOrientation,
-       //         mRotation, mDisplayEnabled);
+        if (DEBUG_ORIENTATION) Slog.v(TAG, "Overwriting rotation value from " + rotation);
+        rotation = mPolicy.rotationForOrientationLw(mForcedAppOrientation,
+                mRotation, mDisplayEnabled);
 
         if (DEBUG_ORIENTATION) Slog.v(TAG, "new rotation is set to " + rotation);
         changed = mDisplayEnabled && mRotation != rotation;
