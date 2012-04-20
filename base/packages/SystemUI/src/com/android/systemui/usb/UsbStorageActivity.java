@@ -135,13 +135,6 @@ public class UsbStorageActivity extends Activity
         mUnmountButton = (Button) findViewById(com.android.internal.R.id.unmount_button);
         mUnmountButton.setOnClickListener(this);
         mProgressBar = (ProgressBar) findViewById(com.android.internal.R.id.progress);
-
-	mProgressBar.invalidate(View.UI_DW_MODE);
-	mUnmountButton.invalidate(View.UI_DW_MODE);
-	mMountButton.invalidate(View.UI_DW_MODE);
-	mBanner.invalidate(View.UI_DW_MODE);
-	mMessage.invalidate(View.UI_DW_MODE);
-	mIcon.invalidate(View.UI_DW_MODE);
     }
 
     @Override
@@ -161,6 +154,13 @@ public class UsbStorageActivity extends Activity
 
     private void switchDisplayAsync(boolean usbStorageInUse) {
         if (usbStorageInUse) {
+	    mProgressBar.invalidate(View.UI_GU_MODE);
+	    mUnmountButton.invalidate(View.UI_GU_MODE);
+	    mMountButton.invalidate(View.UI_GU_MODE);
+	    mBanner.invalidate(View.UI_GU_MODE);
+	    mMessage.invalidate(View.UI_GU_MODE);
+	    mIcon.invalidate(View.UI_GU_MODE);
+
             mProgressBar.setVisibility(View.GONE);
             mUnmountButton.setVisibility(View.VISIBLE);
             mMountButton.setVisibility(View.GONE);
@@ -168,6 +168,13 @@ public class UsbStorageActivity extends Activity
             mBanner.setText(com.android.internal.R.string.usb_storage_stop_title);
             mMessage.setText(com.android.internal.R.string.usb_storage_stop_message);
         } else {
+	    mProgressBar.invalidate(View.UI_GU_MODE);
+	    mUnmountButton.invalidate(View.UI_GU_MODE);
+	    mMountButton.invalidate(View.UI_GU_MODE);
+	    mBanner.invalidate(View.UI_GU_MODE);
+	    mMessage.invalidate(View.UI_GU_MODE);
+	    mIcon.invalidate(View.UI_GU_MODE);
+
             mProgressBar.setVisibility(View.GONE);
             mUnmountButton.setVisibility(View.GONE);
             mMountButton.setVisibility(View.VISIBLE);
@@ -270,6 +277,10 @@ public class UsbStorageActivity extends Activity
         mUIHandler.post(new Runnable() {
             @Override
             public void run() {
+	        mProgressBar.invalidate(View.UI_GU_MODE);
+	        mUnmountButton.invalidate(View.UI_GU_MODE);
+	        mMountButton.invalidate(View.UI_GU_MODE);
+
                 mUnmountButton.setVisibility(View.GONE);
                 mMountButton.setVisibility(View.GONE);
 

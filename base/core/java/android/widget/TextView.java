@@ -336,13 +336,11 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
     
     public TextView(Context context) {
         this(context, null);
-	invalidate(View.UI_DW_MODE);
     }
 
     public TextView(Context context,
                     AttributeSet attrs) {
         this(context, attrs, com.android.internal.R.attr.textViewStyle);
-	invalidate(View.UI_DW_MODE);
     }
 
     @SuppressWarnings("deprecation")
@@ -350,7 +348,6 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
                     AttributeSet attrs,
                     int defStyle) {
         super(context, attrs, defStyle);
-	invalidate(View.UI_DW_MODE);
         mText = "";
 
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);

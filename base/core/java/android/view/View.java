@@ -1115,6 +1115,8 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
 
     public static final int UI_DW_MODE = EINK_AUTO_MODE_REGIONAL | EINK_WAIT_MODE_NOWAIT | EINK_WAVEFORM_MODE_DU | EINK_UPDATE_MODE_PARTIAL;
 
+    public static final int UI_GU_MODE = EINK_AUTO_MODE_REGIONAL | EINK_WAIT_MODE_NOWAIT | EINK_WAVEFORM_MODE_GC16 | EINK_UPDATE_MODE_PARTIAL;
+
     /**
      * Base View state sets
      */
