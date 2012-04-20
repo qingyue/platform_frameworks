@@ -153,6 +153,13 @@ public class UsbStorageActivity extends Activity
     }
 
     private void switchDisplayAsync(boolean usbStorageInUse) {
+	    mProgressBar.invalidate(View.UI_DW_MODE);
+	    mUnmountButton.invalidate(View.UI_DW_MODE);
+	    mMountButton.invalidate(View.UI_DW_MODE);
+	    mBanner.invalidate(View.UI_DW_MODE);
+	    mMessage.invalidate(View.UI_DW_MODE);
+	    mIcon..invalidate(View.UI_DW_MODE);
+
         if (usbStorageInUse) {
             mProgressBar.setVisibility(View.GONE);
             mUnmountButton.setVisibility(View.VISIBLE);
@@ -263,6 +270,10 @@ public class UsbStorageActivity extends Activity
         mUIHandler.post(new Runnable() {
             @Override
             public void run() {
+         	mProgressBar.invalidate(View.UI_DW_MODE);
+	        mUnmountButton.invalidate(View.UI_DW_MODE);
+	        mMountButton.invalidate(View.UI_DW_MODE);
+
                 mUnmountButton.setVisibility(View.GONE);
                 mMountButton.setVisibility(View.GONE);
 
