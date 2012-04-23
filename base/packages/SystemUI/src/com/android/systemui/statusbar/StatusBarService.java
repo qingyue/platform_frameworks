@@ -294,8 +294,11 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mScrollView = (ScrollView)expanded.findViewById(R.id.scroll);
         mNotificationLinearLayout = expanded.findViewById(R.id.notificationLinearLayout);
 
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
+        mOngoingTitle.invalidate(View.UI_GU_MODE);
         mOngoingTitle.setVisibility(View.GONE);
+        mLatestTitle.invalidate(View.UI_GU_MODE);
         mLatestTitle.setVisibility(View.GONE);
 
         mTicker = new MyTicker(context, sb);
@@ -312,6 +315,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         // set the inital view visibility
         setAreThereNotifications();
+        mDateView.invalidate(View.UI_GU_MODE);
         mDateView.setVisibility(View.INVISIBLE);
 
         // receive broadcasts
@@ -348,6 +352,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         }
         StatusBarIconView view = new StatusBarIconView(this, slot);
         view.set(icon);
+        mStatusIcons.invalidate(View.UI_GU_MODE);
         mStatusIcons.addView(view, viewIndex, new LinearLayout.LayoutParams(mIconSize, mIconSize));
     }
 
@@ -358,6 +363,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     + " old=" + old + " icon=" + icon);
         }
         StatusBarIconView view = (StatusBarIconView)mStatusIcons.getChildAt(viewIndex);
+        view.invalidate(View.UI_GU_MODE);
         view.set(icon);
     }
 
@@ -365,6 +371,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         if (SPEW_ICONS) {
             Slog.d(TAG, "removeIcon slot=" + slot + " index=" + index + " viewIndex=" + viewIndex);
         }
+        mStatusIcons.invalidate(View.UI_GU_MODE);
         mStatusIcons.removeViewAt(viewIndex);
     }
 
@@ -573,6 +580,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         parent.addView(row, viewIndex);
         // Add the icon.
         final int iconIndex = chooseIconIndex(isOngoing, viewIndex);
+        mNotificationIcons.invalidate(View.UI_GU_MODE);
         mNotificationIcons.addView(iconView, iconIndex);
         return iconView;
     }
@@ -600,17 +608,23 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         // (no ongoing notifications are clearable)
         if (mLatest.hasClearableItems()) {
+            mClearButton.invalidate(View.UI_GU_MODE);
             mClearButton.setVisibility(View.VISIBLE);
         } else {
+            mClearButton.invalidate(View.UI_GU_MODE);
             mClearButton.setVisibility(View.INVISIBLE);
         }
 
+        mOngoingTitle.invalidate(View.UI_GU_MODE);
         mOngoingTitle.setVisibility(ongoing ? View.VISIBLE : View.GONE);
+        mLatestTitle.invalidate(View.UI_GU_MODE);
         mLatestTitle.setVisibility(latest ? View.VISIBLE : View.GONE);
 
         if (ongoing || latest) {
+            mNoNotificationsTitle.invalidate(View.UI_GU_MODE);
             mNoNotificationsTitle.setVisibility(View.GONE);
         } else {
+            mNoNotificationsTitle.invalidate(View.UI_GU_MODE);
             mNoNotificationsTitle.setVisibility(View.VISIBLE);
         }
     }
@@ -688,7 +702,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedParams.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mExpandedParams.flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
         mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.requestFocus(View.FOCUS_FORWARD);
+        mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.VISIBLE);
         mExpandedView.setVisibility(View.VISIBLE);
 
@@ -766,7 +782,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedParams.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mExpandedParams.flags &= ~WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
         mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+        mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.GONE);
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
 
         if ((mDisabled & StatusBarManager.DISABLE_NOTIFICATION_ICONS) == 0) {
@@ -1088,12 +1106,14 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerStarting() {
             if (SPEW) Slog.d(TAG, "tickerStarting");
             mTicking = true;
+            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.GONE);
+            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.VISIBLE);
-            mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
-            mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+            //mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
+            //mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
             if (mExpandedVisible) {
-                setDateViewVisibility(false, com.android.internal.R.anim.push_up_out);
+                //setDateViewVisibility(false, com.android.internal.R.anim.push_up_out);
             }
         }
 
@@ -1101,24 +1121,28 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerDone() {
             if (SPEW) Slog.d(TAG, "tickerDone");
             mTicking = false;
+            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
+            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
-            mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
-            mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out, null));
+            //mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+            //mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out, null));
             if (mExpandedVisible) {
-                setDateViewVisibility(true, com.android.internal.R.anim.push_down_in);
+                //setDateViewVisibility(true, com.android.internal.R.anim.push_down_in);
             }
         }
 
         void tickerHalting() {
             if (SPEW) Slog.d(TAG, "tickerHalting");
             mTicking = false;
+            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
+            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
-            mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
-            mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out, null));
+            //mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
+            //mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out, null));
             if (mExpandedVisible) {
-                setDateViewVisibility(true, com.android.internal.R.anim.fade_in);
+                //setDateViewVisibility(true, com.android.internal.R.anim.fade_in);
             }
         }
     }
@@ -1255,17 +1279,19 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     }
 
     void setDateViewVisibility(boolean visible, int anim) {
+        mDateView.invalidate(View.UI_GU_MODE);
         mDateView.setUpdates(visible);
         mDateView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-        mDateView.startAnimation(loadAnim(anim, null));
+        //mDateView.startAnimation(loadAnim(anim, null));
     }
 
     void setNotificationIconVisibility(boolean visible, int anim) {
         int old = mNotificationIcons.getVisibility();
         int v = visible ? View.VISIBLE : View.INVISIBLE;
         if (old != v) {
+            mNotificationIcons.invalidate(View.UI_GU_MODE);
             mNotificationIcons.setVisibility(v);
-            mNotificationIcons.startAnimation(loadAnim(anim, null));
+            //mNotificationIcons.startAnimation(loadAnim(anim, null));
         }
     }
 
@@ -1403,6 +1429,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             if ((net & StatusBarManager.DISABLE_NOTIFICATION_ICONS) != 0) {
                 Slog.d(TAG, "DISABLE_NOTIFICATION_ICONS: yes");
                 if (mTicking) {
+                    mNotificationIcons.invalidate(View.UI_GU_MODE);
                     mNotificationIcons.setVisibility(View.INVISIBLE);
                     mTicker.halt();
                 } else {
@@ -1458,9 +1485,13 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     void updateResources() {
         Resources res = getResources();
 
+        mClearButton.invalidate(View.UI_GU_MODE);
         mClearButton.setText(getText(R.string.status_bar_clear_all_button));
+        mOngoingTitle.invalidate(View.UI_GU_MODE);
         mOngoingTitle.setText(getText(R.string.status_bar_ongoing_events_title));
+        mLatestTitle.invalidate(View.UI_GU_MODE);
         mLatestTitle.setText(getText(R.string.status_bar_latest_events_title));
+        mNoNotificationsTitle.invalidate(View.UI_GU_MODE);
         mNoNotificationsTitle.setText(getText(R.string.status_bar_no_notifications_title));
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
