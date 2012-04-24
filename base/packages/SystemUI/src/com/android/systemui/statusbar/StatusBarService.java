@@ -1095,7 +1095,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mTicking = true;
             mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.GONE);
-            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
@@ -1110,7 +1109,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mTicking = false;
             mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
-            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out, null));
@@ -1124,7 +1122,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mTicking = false;
             mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
-            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out, null));
