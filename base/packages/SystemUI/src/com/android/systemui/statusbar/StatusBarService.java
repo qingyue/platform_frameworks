@@ -294,13 +294,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mScrollView = (ScrollView)expanded.findViewById(R.id.scroll);
         mNotificationLinearLayout = expanded.findViewById(R.id.notificationLinearLayout);
 
-        mScrollView.invalidate(View.UI_GU_MODE);
-        mNotificationLinearLayout.invalidate(View.UI_GU_MODE);
-        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
-        mOngoingTitle.invalidate(View.UI_GU_MODE);
         mOngoingTitle.setVisibility(View.GONE);
-        mLatestTitle.invalidate(View.UI_GU_MODE);
         mLatestTitle.setVisibility(View.GONE);
 
         mTicker = new MyTicker(context, sb);
@@ -610,23 +605,17 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         // (no ongoing notifications are clearable)
         if (mLatest.hasClearableItems()) {
-            mClearButton.invalidate(View.UI_GU_MODE);
             mClearButton.setVisibility(View.VISIBLE);
         } else {
-            mClearButton.invalidate(View.UI_GU_MODE);
             mClearButton.setVisibility(View.INVISIBLE);
         }
 
-        mOngoingTitle.invalidate(View.UI_GU_MODE);
         mOngoingTitle.setVisibility(ongoing ? View.VISIBLE : View.GONE);
-        mLatestTitle.invalidate(View.UI_GU_MODE);
         mLatestTitle.setVisibility(latest ? View.VISIBLE : View.GONE);
 
         if (ongoing || latest) {
-            mNoNotificationsTitle.invalidate(View.UI_GU_MODE);
             mNoNotificationsTitle.setVisibility(View.GONE);
         } else {
-            mNoNotificationsTitle.invalidate(View.UI_GU_MODE);
             mNoNotificationsTitle.setVisibility(View.VISIBLE);
         }
     }
@@ -707,7 +696,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedView.requestFocus(View.FOCUS_FORWARD);
         mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.VISIBLE);
-        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.VISIBLE);
 
         if (!mTicking) {
@@ -786,7 +774,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.GONE);
-        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
 
         if ((mDisabled & StatusBarManager.DISABLE_NOTIFICATION_ICONS) == 0) {
@@ -1487,13 +1474,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     void updateResources() {
         Resources res = getResources();
 
-        mClearButton.invalidate(View.UI_GU_MODE);
         mClearButton.setText(getText(R.string.status_bar_clear_all_button));
-        mOngoingTitle.invalidate(View.UI_GU_MODE);
         mOngoingTitle.setText(getText(R.string.status_bar_ongoing_events_title));
-        mLatestTitle.invalidate(View.UI_GU_MODE);
         mLatestTitle.setText(getText(R.string.status_bar_latest_events_title));
-        mNoNotificationsTitle.invalidate(View.UI_GU_MODE);
         mNoNotificationsTitle.setText(getText(R.string.status_bar_no_notifications_title));
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
