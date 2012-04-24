@@ -360,7 +360,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     + " old=" + old + " icon=" + icon);
         }
         StatusBarIconView view = (StatusBarIconView)mStatusIcons.getChildAt(viewIndex);
-        view.invalidate(View.UI_GU_MODE);
         view.set(icon);
     }
 
