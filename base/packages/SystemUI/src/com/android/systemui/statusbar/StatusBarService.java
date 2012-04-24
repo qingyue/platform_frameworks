@@ -294,6 +294,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mScrollView = (ScrollView)expanded.findViewById(R.id.scroll);
         mNotificationLinearLayout = expanded.findViewById(R.id.notificationLinearLayout);
 
+        mScrollView.invalidate(View.UI_GU_MODE);
+        mNotificationLinearLayout.invalidate(View.UI_GU_MODE);
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
         mOngoingTitle.invalidate(View.UI_GU_MODE);
         mOngoingTitle.setVisibility(View.GONE);
@@ -704,6 +707,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedView.requestFocus(View.FOCUS_FORWARD);
         mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.VISIBLE);
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.VISIBLE);
 
         if (!mTicking) {
@@ -782,6 +786,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.GONE);
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
 
         if ((mDisabled & StatusBarManager.DISABLE_NOTIFICATION_ICONS) == 0) {
