@@ -312,7 +312,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         // set the inital view visibility
         setAreThereNotifications();
-        mDateView.invalidate(View.UI_GU_MODE);
         mDateView.setVisibility(View.INVISIBLE);
 
         // receive broadcasts
@@ -349,7 +348,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         }
         StatusBarIconView view = new StatusBarIconView(this, slot);
         view.set(icon);
-        mStatusIcons.invalidate(View.UI_GU_MODE);
         mStatusIcons.addView(view, viewIndex, new LinearLayout.LayoutParams(mIconSize, mIconSize));
     }
 
@@ -367,7 +365,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         if (SPEW_ICONS) {
             Slog.d(TAG, "removeIcon slot=" + slot + " index=" + index + " viewIndex=" + viewIndex);
         }
-        mStatusIcons.invalidate(View.UI_GU_MODE);
         mStatusIcons.removeViewAt(viewIndex);
     }
 
@@ -576,7 +573,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         parent.addView(row, viewIndex);
         // Add the icon.
         final int iconIndex = chooseIconIndex(isOngoing, viewIndex);
-        mNotificationIcons.invalidate(View.UI_GU_MODE);
         mNotificationIcons.addView(iconView, iconIndex);
         return iconView;
     }
@@ -1092,7 +1088,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerStarting() {
             if (SPEW) Slog.d(TAG, "tickerStarting");
             mTicking = true;
-            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.GONE);
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
@@ -1106,7 +1101,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerDone() {
             if (SPEW) Slog.d(TAG, "tickerDone");
             mTicking = false;
-            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
@@ -1119,7 +1113,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerHalting() {
             if (SPEW) Slog.d(TAG, "tickerHalting");
             mTicking = false;
-            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
@@ -1262,7 +1255,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     }
 
     void setDateViewVisibility(boolean visible, int anim) {
-        mDateView.invalidate(View.UI_GU_MODE);
         mDateView.setUpdates(visible);
         mDateView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         mDateView.startAnimation(loadAnim(anim, null));
@@ -1272,7 +1264,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         int old = mNotificationIcons.getVisibility();
         int v = visible ? View.VISIBLE : View.INVISIBLE;
         if (old != v) {
-            mNotificationIcons.invalidate(View.UI_GU_MODE);
             mNotificationIcons.setVisibility(v);
             mNotificationIcons.startAnimation(loadAnim(anim, null));
         }
@@ -1412,7 +1403,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             if ((net & StatusBarManager.DISABLE_NOTIFICATION_ICONS) != 0) {
                 Slog.d(TAG, "DISABLE_NOTIFICATION_ICONS: yes");
                 if (mTicking) {
-                    mNotificationIcons.invalidate(View.UI_GU_MODE);
                     mNotificationIcons.setVisibility(View.INVISIBLE);
                     mTicker.halt();
                 } else {
