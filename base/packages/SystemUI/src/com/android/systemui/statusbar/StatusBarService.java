@@ -312,7 +312,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         // set the inital view visibility
         setAreThereNotifications();
-        mDateView.invalidate(View.UI_GU_MODE);
         mDateView.setVisibility(View.INVISIBLE);
 
         // receive broadcasts
@@ -574,6 +573,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         parent.addView(row, viewIndex);
         // Add the icon.
         final int iconIndex = chooseIconIndex(isOngoing, viewIndex);
+        mNotificationIcons.invalidate(View.UI_GU_MODE);
         mNotificationIcons.addView(iconView, iconIndex);
         return iconView;
     }
@@ -1256,7 +1256,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     }
 
     void setDateViewVisibility(boolean visible, int anim) {
-        mDateView.invalidate(View.UI_GU_MODE);
         mDateView.setUpdates(visible);
         mDateView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         mDateView.startAnimation(loadAnim(anim, null));
@@ -1266,6 +1265,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         int old = mNotificationIcons.getVisibility();
         int v = visible ? View.VISIBLE : View.INVISIBLE;
         if (old != v) {
+            mNotificationIcons.invalidate(View.UI_GU_MODE);
             mNotificationIcons.setVisibility(v);
             mNotificationIcons.startAnimation(loadAnim(anim, null));
         }
@@ -1405,6 +1405,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             if ((net & StatusBarManager.DISABLE_NOTIFICATION_ICONS) != 0) {
                 Slog.d(TAG, "DISABLE_NOTIFICATION_ICONS: yes");
                 if (mTicking) {
+                    mNotificationIcons.invalidate(View.UI_GU_MODE);
                     mNotificationIcons.setVisibility(View.INVISIBLE);
                     mTicker.halt();
                 } else {
