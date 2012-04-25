@@ -294,6 +294,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mScrollView = (ScrollView)expanded.findViewById(R.id.scroll);
         mNotificationLinearLayout = expanded.findViewById(R.id.notificationLinearLayout);
 
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
         mOngoingTitle.setVisibility(View.GONE);
         mLatestTitle.setVisibility(View.GONE);
@@ -693,7 +694,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedParams.flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
         mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         mExpandedView.requestFocus(View.FOCUS_FORWARD);
+        mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.VISIBLE);
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.VISIBLE);
 
         if (!mTicking) {
@@ -770,7 +773,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedParams.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mExpandedParams.flags &= ~WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
         mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+        mTrackingView.invalidate(View.UI_GU_MODE);
         mTrackingView.setVisibility(View.GONE);
+        mExpandedView.invalidate(View.UI_GU_MODE);
         mExpandedView.setVisibility(View.GONE);
 
         if ((mDisabled & StatusBarManager.DISABLE_NOTIFICATION_ICONS) == 0) {
@@ -1094,6 +1099,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mTicking = true;
             mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.GONE);
+            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
@@ -1108,6 +1114,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mTicking = false;
             mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
+            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out, null));
@@ -1121,6 +1128,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mTicking = false;
             mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
+            mTickerView.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out, null));
