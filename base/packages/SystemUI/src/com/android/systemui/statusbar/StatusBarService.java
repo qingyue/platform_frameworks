@@ -1260,7 +1260,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                            ViewGroup.LayoutParams.MATCH_PARENT));
         mExpandedDialog.getWindow().setBackgroundDrawable(null);
+        mExpandedDialog.invalidate(View.UI_GU_MODE);
         mExpandedDialog.show();
+        mExpandedDialog.invalidate(View.UI_GU_MODE);
         FrameLayout hack = (FrameLayout)mExpandedView.getParent();
     }
 

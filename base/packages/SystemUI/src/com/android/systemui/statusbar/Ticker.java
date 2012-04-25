@@ -146,16 +146,16 @@ public abstract class Ticker {
         mTickerView = sb.findViewById(R.id.ticker);
 
         mIconSwitcher = (ImageSwitcher)sb.findViewById(R.id.tickerIcon);
-        mIconSwitcher.setInAnimation(
-                    AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_in));
-        mIconSwitcher.setOutAnimation(
-                    AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_out));
+        //mIconSwitcher.setInAnimation(
+        //            AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_in));
+        //mIconSwitcher.setOutAnimation(
+        //            AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_out));
 
         mTextSwitcher = (TextSwitcher)sb.findViewById(R.id.tickerText);
-        mTextSwitcher.setInAnimation(
-                    AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_in));
-        mTextSwitcher.setOutAnimation(
-                    AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_out));
+        //mTextSwitcher.setInAnimation(
+        //            AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_in));
+        //mTextSwitcher.setOutAnimation(
+        //            AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_out));
 
         // Copy the paint style of one of the TextSwitchers children to use later for measuring
         TextView text = (TextView)mTextSwitcher.getChildAt(0);
