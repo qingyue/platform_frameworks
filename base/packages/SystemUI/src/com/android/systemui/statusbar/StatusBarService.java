@@ -348,6 +348,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         }
         StatusBarIconView view = new StatusBarIconView(this, slot);
         view.set(icon);
+        mStatusIcons.invalidate(View.UI_GU_MODE);
         mStatusIcons.addView(view, viewIndex, new LinearLayout.LayoutParams(mIconSize, mIconSize));
     }
 
@@ -358,6 +359,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     + " old=" + old + " icon=" + icon);
         }
         StatusBarIconView view = (StatusBarIconView)mStatusIcons.getChildAt(viewIndex);
+        view.invalidate(View.UI_GU_MODE);
         view.set(icon);
     }
 
@@ -365,6 +367,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         if (SPEW_ICONS) {
             Slog.d(TAG, "removeIcon slot=" + slot + " index=" + index + " viewIndex=" + viewIndex);
         }
+        mStatusIcons.invalidate(View.UI_GU_MODE);
         mStatusIcons.removeViewAt(viewIndex);
     }
 
@@ -1089,6 +1092,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerStarting() {
             if (SPEW) Slog.d(TAG, "tickerStarting");
             mTicking = true;
+            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.GONE);
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
@@ -1102,6 +1106,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerDone() {
             if (SPEW) Slog.d(TAG, "tickerDone");
             mTicking = false;
+            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
@@ -1114,6 +1119,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         void tickerHalting() {
             if (SPEW) Slog.d(TAG, "tickerHalting");
             mTicking = false;
+            mIcons.invalidate(View.UI_GU_MODE);
             mIcons.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
