@@ -1268,8 +1268,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     void setDateViewVisibility(boolean visible, int anim) {
         mDateView.invalidate(View.UI_DW_MODE);
         mDateView.setUpdates(visible);
-        mDateView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-        
+        mDateView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE); 
         mDateView.startAnimation(loadAnim(anim, null));
     }
 
