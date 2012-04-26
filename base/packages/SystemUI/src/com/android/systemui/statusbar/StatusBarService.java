@@ -1305,6 +1305,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         int h = mStatusBarView.getHeight();
         int disph = mDisplay.getHeight();
+        Log.i(TAG, "h: "+h+", disph: "+disph);
 
         // If the expanded view is not visible, make sure they're still off screen.
         // Maybe the view was resized.
@@ -1313,11 +1314,13 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 mTrackingPosition = -disph;
                 if (mTrackingParams != null) {
                     mTrackingParams.y = mTrackingPosition;
+                    Log.i(TAG, "mTrackingParams.y: "+mTrackingParams.y);
                     WindowManagerImpl.getDefault().updateViewLayout(mTrackingView, mTrackingParams);
                 }
             }
             if (mExpandedParams != null) {
                 mExpandedParams.y = -disph;
+                Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+", (mExpandedParams != null):"+(mExpandedParams != null));
                 mExpandedDialog.getWindow().setAttributes(mExpandedParams);
             }
 
@@ -1356,13 +1359,16 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             if (expandedPosition != EXPANDED_LEAVE_ALONE) {
                 mExpandedParams.y = pos + mTrackingView.getHeight()
                         - (mTrackingParams.height-closePos) - contentsBottom;
+                Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+", (expandedPosition != EXPANDED_LEAVE_ALONE)");
                 int max = h;
                 if (mExpandedParams.y > max) {
                     mExpandedParams.y = max;
+                    Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (mExpandedParams.y > max)");
                 }
                 int min = mTrackingPosition;
                 if (mExpandedParams.y < min) {
                     mExpandedParams.y = min;
+                    Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (mExpandedParams.y < min)");
                 }
 
                 boolean visible = (mTrackingPosition + mTrackingView.getHeight()) > h;
@@ -1370,6 +1376,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     // if the contents aren't visible, move the expanded view way off screen
                     // because the window itself extends below the content view.
                     mExpandedParams.y = -disph;
+                    Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (!visible)");
                 }
                 mExpandedDialog.getWindow().setAttributes(mExpandedParams);
                 Log.i(TAG, "mExpandedDialog.y:"+mExpandedDialog.getWindow().getAttributes().height+",   "+mExpandedVisible);
