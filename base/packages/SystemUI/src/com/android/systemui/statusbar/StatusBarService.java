@@ -1334,19 +1334,25 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         int pos;
         if (expandedPosition == EXPANDED_FULL_OPEN) {
             pos = h;
+            Log.i(TAG, "(expandedPosition == EXPANDED_FULL_OPEN): "+pos);
         }
         else if (expandedPosition == EXPANDED_LEAVE_ALONE) {
             pos = mTrackingPosition;
+            Log.i(TAG, "(expandedPosition == EXPANDED_LEAVE_ALONE): "+pos);
         }
         else {
             if (expandedPosition <= disph) {
                 pos = expandedPosition;
+                Log.i(TAG, "(expandedPosition <= disph): "+pos);
             } else {
                 pos = disph;
+                Log.i(TAG, "else: "+pos);
             }
             pos -= disph-h;
+            Log.i(TAG, "(pos -= disph-h): "+pos);
         }
         mTrackingPosition = mTrackingParams.y = pos;
+        Log.i(TAG, "mTrackingPosition: "+mTrackingPosition+", mTrackingParams.y: "+mTrackingParams.y+", pos: "+pos);
         mTrackingParams.height = disph-h;
         WindowManagerImpl.getDefault().updateViewLayout(mTrackingView, mTrackingParams);
 
@@ -1360,16 +1366,14 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             if (expandedPosition != EXPANDED_LEAVE_ALONE) {
                 mExpandedParams.y = pos + mTrackingView.getHeight()
                         - (mTrackingParams.height-closePos) - contentsBottom;
-                Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+", (expandedPosition != EXPANDED_LEAVE_ALONE)");
+
                 int max = h;
                 if (mExpandedParams.y > max) {
                     mExpandedParams.y = max;
-                    Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (mExpandedParams.y > max)");
                 }
                 int min = mTrackingPosition;
                 if (mExpandedParams.y < min) {
                     mExpandedParams.y = min;
-                    Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (mExpandedParams.y < min)");
                 }
 
                 boolean visible = (mTrackingPosition + mTrackingView.getHeight()) > h;
@@ -1377,13 +1381,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     // if the contents aren't visible, move the expanded view way off screen
                     // because the window itself extends below the content view.
                     mExpandedParams.y = -disph;
-                    mExpandedDialog.getWindow().setAttributes(mExpandedParams);
-                    Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (!visible)");
                 }
-                else {
-                	mExpandedParams.y = ViewGroup.LayoutParams.MATCH_PARENT;
-                	mExpandedDialog.getWindow().setAttributes(mExpandedParams);
-				}
+            	mExpandedDialog.getWindow().setAttributes(mExpandedParams);
                 Log.i(TAG, "mExpandedDialog.y:"+mExpandedDialog.getWindow().getAttributes().height+",   "+mExpandedVisible);
 
                 if (SPEW) Slog.d(TAG, "updateExpandedViewPos visibilityChanged(" + visible + ")");
@@ -1406,7 +1405,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     void updateExpandedHeight() {
         if (mExpandedView != null) {
-            Log.i(TAG, "mExpandedParams.height: "+getExpandedHeight());
             mExpandedParams.height = getExpandedHeight();
             mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         }
