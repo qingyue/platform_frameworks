@@ -1246,7 +1246,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         Drawable bg;
 
         /// ---------- Expanded View --------------
-        //pixelFormat = PixelFormat.TRANSLUCENT;
+        pixelFormat = PixelFormat.TRANSLUCENT;
 
         final int disph = mDisplay.getHeight();
         lp = mExpandedDialog.getWindow().getAttributes();
