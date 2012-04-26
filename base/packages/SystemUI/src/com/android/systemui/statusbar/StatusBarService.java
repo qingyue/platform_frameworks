@@ -1378,7 +1378,10 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     mExpandedParams.y = -disph;
                     Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (!visible)");
                 }
-                mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+                else {
+                	mExpandedParams.y = ViewGroup.LayoutParams.MATCH_PARENT;
+                	mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+				}
                 Log.i(TAG, "mExpandedDialog.y:"+mExpandedDialog.getWindow().getAttributes().height+",   "+mExpandedVisible);
 
                 if (SPEW) Slog.d(TAG, "updateExpandedViewPos visibilityChanged(" + visible + ")");
