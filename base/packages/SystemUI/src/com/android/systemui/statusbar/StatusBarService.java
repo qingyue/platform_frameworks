@@ -1295,6 +1295,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     void updateExpandedViewPos(int expandedPosition) {
         Log.i(TAG, "====updateExpandedViewPos====>"+expandedPosition);
+        expandedPosition = EXPANDED_FULL_OPEN;
 
         if (SPEW) {
             Slog.d(TAG, "updateExpandedViewPos before expandedPosition=" + expandedPosition
@@ -1332,7 +1333,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         // tracking view...
         int pos;
         if (expandedPosition == EXPANDED_FULL_OPEN) {
-            pos = h;
+            //pos = h;
+            pos = mStatusBarView.getHeight() + mCloseView.getHeight();
             Log.i(TAG, "(expandedPosition == EXPANDED_FULL_OPEN): "+pos);
         }
         else if (expandedPosition == EXPANDED_LEAVE_ALONE) {
