@@ -1347,7 +1347,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         }
         mTrackingPosition = mTrackingParams.y = pos;
         mTrackingParams.height = disph-h;
-        //WindowManagerImpl.getDefault().updateViewLayout(mTrackingView, mTrackingParams);
+        WindowManagerImpl.getDefault().updateViewLayout(mTrackingView, mTrackingParams);
 
         if (mExpandedParams != null) {
             mCloseView.getLocationInWindow(mPositionTmp);
@@ -1357,12 +1357,13 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             final int contentsBottom = mPositionTmp[1] + mExpandedContents.getHeight();
 
             if (expandedPosition != EXPANDED_LEAVE_ALONE) {
-                mExpandedParams.y = pos + mTrackingView.getHeight()
-                        - (mTrackingParams.height-closePos) - contentsBottom;
+                //mExpandedParams.y = pos + mTrackingView.getHeight()
+                //        - (mTrackingParams.height-closePos) - contentsBottom;
                 Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+", (expandedPosition != EXPANDED_LEAVE_ALONE)");
                 int max = h;
                 if (mExpandedParams.y > max) {
-                    mExpandedParams.y = max;
+                    //mExpandedParams.y = max;
+                    mExpandedParams.y = ViewGroup.LayoutParams.MATCH_PARENT;
                     Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (mExpandedParams.y > max)");
                 }
                 int min = mTrackingPosition;
