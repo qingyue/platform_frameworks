@@ -1295,6 +1295,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     void updateExpandedViewPos(int expandedPosition) {
         Log.i(TAG, "====updateExpandedViewPos====>"+expandedPosition);
+        expandedPosition = EXPANDED_FULL_OPEN;
 
         if (SPEW) {
             Slog.d(TAG, "updateExpandedViewPos before expandedPosition=" + expandedPosition
@@ -1362,8 +1363,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+", (expandedPosition != EXPANDED_LEAVE_ALONE)");
                 int max = h;
                 if (mExpandedParams.y > max) {
-                    //mExpandedParams.y = max;
-                    mExpandedParams.y = ViewGroup.LayoutParams.MATCH_PARENT;
+                    mExpandedParams.y = max;
                     Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (mExpandedParams.y > max)");
                 }
                 int min = mTrackingPosition;
@@ -1377,6 +1377,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     // if the contents aren't visible, move the expanded view way off screen
                     // because the window itself extends below the content view.
                     mExpandedParams.y = -disph;
+                    mExpandedDialog.getWindow().setAttributes(mExpandedParams);
                     Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+",  (!visible)");
                 }
                 else {
