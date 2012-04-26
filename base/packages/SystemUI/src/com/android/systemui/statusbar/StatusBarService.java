@@ -1334,8 +1334,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         int pos;
         if (expandedPosition == EXPANDED_FULL_OPEN) {
             //pos = h;
-            pos = mStatusBarView.getHeight() + mCloseView.getHeight();
-            Log.i(TAG, "(expandedPosition == EXPANDED_FULL_OPEN): "+pos);
+            pos = h + mCloseView.getHeight();
+            Log.i(TAG, "(expandedPosition == EXPANDED_FULL_OPEN): "+pos+",   h: "+", mCloseView.getHeight(): "+mCloseView.getHeight());
         }
         else if (expandedPosition == EXPANDED_LEAVE_ALONE) {
             pos = mTrackingPosition;
