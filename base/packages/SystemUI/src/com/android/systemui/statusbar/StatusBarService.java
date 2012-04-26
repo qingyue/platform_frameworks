@@ -1357,8 +1357,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             final int contentsBottom = mPositionTmp[1] + mExpandedContents.getHeight();
 
             if (expandedPosition != EXPANDED_LEAVE_ALONE) {
-                //mExpandedParams.y = pos + mTrackingView.getHeight()
-                //        - (mTrackingParams.height-closePos) - contentsBottom;
+                mExpandedParams.y = pos + mTrackingView.getHeight()
+                        - (mTrackingParams.height-closePos) - contentsBottom;
                 Log.i(TAG, "mExpandedParams.y: "+mExpandedParams.y+", (expandedPosition != EXPANDED_LEAVE_ALONE)");
                 int max = h;
                 if (mExpandedParams.y > max) {
@@ -1405,6 +1405,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     void updateExpandedHeight() {
         if (mExpandedView != null) {
+            Log.i(TAG, "mExpandedParams.height: "+getExpandedHeight());
             mExpandedParams.height = getExpandedHeight();
             mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         }
