@@ -1347,7 +1347,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         }
         mTrackingPosition = mTrackingParams.y = pos;
         mTrackingParams.height = disph-h;
-        WindowManagerImpl.getDefault().updateViewLayout(mTrackingView, mTrackingParams);
+        //WindowManagerImpl.getDefault().updateViewLayout(mTrackingView, mTrackingParams);
 
         if (mExpandedParams != null) {
             mCloseView.getLocationInWindow(mPositionTmp);
