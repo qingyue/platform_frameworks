@@ -1295,7 +1295,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     void updateExpandedViewPos(int expandedPosition) {
         Log.i(TAG, "====updateExpandedViewPos====>"+expandedPosition);
-        expandedPosition = EXPANDED_FULL_OPEN;
 
         if (SPEW) {
             Slog.d(TAG, "updateExpandedViewPos before expandedPosition=" + expandedPosition
