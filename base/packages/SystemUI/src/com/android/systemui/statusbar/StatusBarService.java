@@ -691,7 +691,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         mExpandedParams.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mExpandedParams.flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
-        //mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+        mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         mExpandedView.requestFocus(View.FOCUS_FORWARD);
         mTrackingView.setVisibility(View.VISIBLE);
         mExpandedView.setVisibility(View.VISIBLE);
@@ -769,7 +769,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         visibilityChanged(false);
         mExpandedParams.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mExpandedParams.flags &= ~WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
-        //mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+        mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         mTrackingView.setVisibility(View.GONE);
         mExpandedView.setVisibility(View.GONE);
 
@@ -937,6 +937,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     }
 
     boolean interceptTouchEvent(MotionEvent event) {
+        Log.i(TAG, "====interceptTouchEvent====");
         if (SPEW) {
             Slog.d(TAG, "Touch: rawY=" + event.getRawY() + " event=" + event + " mDisabled="
                 + mDisabled);
@@ -948,6 +949,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         final int statusBarSize = mStatusBarView.getHeight();
         final int hitSize = statusBarSize*2;
+
+        Log.i(TAG, "hitSize:"+hitSize);
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             final int y = (int)event.getRawY();
 
@@ -957,6 +961,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 mTrackingView.getLocationOnScreen(mAbsPos);
                 mViewDelta = mAbsPos[1] + mTrackingView.getHeight() - y;
             }
+
+            Log.i(TAG, "y: "+y);
+
             if ((!mExpanded && y < hitSize) ||
                     (mExpanded && y > (mDisplay.getHeight()-hitSize))) {
 
@@ -973,6 +980,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         } else if (mTracking) {
             mVelocityTracker.addMovement(event);
             final int minY = statusBarSize + mCloseView.getHeight();
+
+            Log.i(TAG, "minY: "+minY);
+
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 int y = (int)event.getRawY();
                 if (mAnimatingReveal && y < minY) {
@@ -999,6 +1009,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 if (negative) {
                     vel = -vel;
                 }
+
+                Log.i(TAG, "===performFling===>"+((int)event.getRawY())+", vel: "+vel);
 
                 performFling((int)event.getRawY(), vel, false);
             }
@@ -1229,31 +1241,31 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     }
 
     void onTrackingViewAttached() {
-        //WindowManager.LayoutParams lp;
-        //int pixelFormat;
-        //Drawable bg;
+        WindowManager.LayoutParams lp;
+        int pixelFormat;
+        Drawable bg;
 
         /// ---------- Expanded View --------------
         //pixelFormat = PixelFormat.TRANSLUCENT;
 
-        //final int disph = mDisplay.getHeight();
-        //lp = mExpandedDialog.getWindow().getAttributes();
-        //lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        //lp.height = getExpandedHeight();
-        //lp.x = 0;
-        //mTrackingPosition = lp.y = -disph; // sufficiently large negative
-        //lp.type = WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL;
-        //lp.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-        //        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        //        | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-        //        | WindowManager.LayoutParams.FLAG_DITHER
-        //        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        //lp.format = pixelFormat;
-        //lp.gravity = Gravity.TOP | Gravity.FILL_HORIZONTAL;
-        //lp.setTitle("StatusBarExpanded");
-        //mExpandedDialog.getWindow().setAttributes(lp);
-        //mExpandedDialog.getWindow().setFormat(pixelFormat);
-        //mExpandedParams = lp;
+        final int disph = mDisplay.getHeight();
+        lp = mExpandedDialog.getWindow().getAttributes();
+        lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        lp.height = getExpandedHeight();
+        lp.x = 0;
+        mTrackingPosition = lp.y = -disph; // sufficiently large negative
+        lp.type = WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL;
+        lp.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_DITHER
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        lp.format = pixelFormat;
+        lp.gravity = Gravity.TOP | Gravity.FILL_HORIZONTAL;
+        lp.setTitle("StatusBarExpanded");
+        mExpandedDialog.getWindow().setAttributes(lp);
+        mExpandedDialog.getWindow().setFormat(pixelFormat);
+        mExpandedParams = lp;
 
         mExpandedDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         mExpandedDialog.setContentView(mExpandedView,
@@ -1261,6 +1273,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                                            ViewGroup.LayoutParams.MATCH_PARENT));
         mExpandedDialog.getWindow().setBackgroundDrawable(null);
         mExpandedDialog.show();
+        Log.i(TAG, "======onTrackingViewAttached======>"+mExpandedDialog.getWindow().getAttributes().height);
         FrameLayout hack = (FrameLayout)mExpandedView.getParent();
     }
 
@@ -1281,6 +1294,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     }
 
     void updateExpandedViewPos(int expandedPosition) {
+        Log.i(TAG, "====updateExpandedViewPos====>"+expandedPosition);
+
         if (SPEW) {
             Slog.d(TAG, "updateExpandedViewPos before expandedPosition=" + expandedPosition
                     + " mTrackingParams.y=" 
@@ -1303,8 +1318,11 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             }
             if (mExpandedParams != null) {
                 mExpandedParams.y = -disph;
-                //mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+                mExpandedDialog.getWindow().setAttributes(mExpandedParams);
             }
+
+            Log.i(TAG, "mExpandedDialog.y:"+mExpandedDialog.getWindow().getAttributes().height+",   "+mExpandedVisible);
+
             return;
         }
 
@@ -1353,7 +1371,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     // because the window itself extends below the content view.
                     mExpandedParams.y = -disph;
                 }
-                //mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+                mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+                Log.i(TAG, "mExpandedDialog.y:"+mExpandedDialog.getWindow().getAttributes().height+",   "+mExpandedVisible);
 
                 if (SPEW) Slog.d(TAG, "updateExpandedViewPos visibilityChanged(" + visible + ")");
                 visibilityChanged(visible);
@@ -1376,7 +1395,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     void updateExpandedHeight() {
         if (mExpandedView != null) {
             mExpandedParams.height = getExpandedHeight();
-            //mExpandedDialog.getWindow().setAttributes(mExpandedParams);
+            mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         }
     }
 
