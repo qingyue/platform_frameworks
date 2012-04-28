@@ -611,7 +611,7 @@ public class StatusBarPolicy {
         // phone_signal
         mPhone = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
-        mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+        //mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
 
         // register for phone state notifications.
         ((TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE))
@@ -1102,7 +1102,7 @@ public class StatusBarPolicy {
             } else {
                 mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
             }
-            mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+            //mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
             return;
         }
 
@@ -1141,7 +1141,7 @@ public class StatusBarPolicy {
             }
         }
         mPhoneSignalIconId = iconList[iconLevel];
-        mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+        //mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
     }
 
     private int getCdmaLevel() {
@@ -1499,7 +1499,7 @@ public class StatusBarPolicy {
                 break;
 
         }
-        mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+        //mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
     }
 
     private class StatusBarHandler extends Handler {

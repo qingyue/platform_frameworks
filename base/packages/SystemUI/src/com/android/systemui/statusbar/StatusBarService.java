@@ -801,9 +801,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             else if (mAnimY < mStatusBarView.getHeight()) {
                 if (SPEW) Slog.d(TAG, "Animation completed to collapsed state.");
                 mAnimating = false;
-                if (mExpanded) {
-                    mStatusBarView.invalidate(View.UI_GC_MODE);
-                }
                 updateExpandedViewPos(0);
                 performCollapse();
             }
@@ -1101,7 +1098,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mIcons.setVisibility(View.GONE);
             mIcons.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.VISIBLE);
-            mTickerView.invalidate(View.UI_GU_MODE);
             //mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             //mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
             if (mExpandedVisible) {
@@ -1116,7 +1112,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mIcons.setVisibility(View.VISIBLE);
             mIcons.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
-            mTickerView.invalidate(View.UI_GU_MODE);
             //mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             //mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out, null));
             if (mExpandedVisible) {
@@ -1130,7 +1125,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mIcons.setVisibility(View.VISIBLE);
             mIcons.invalidate(View.UI_GU_MODE);
             mTickerView.setVisibility(View.GONE);
-            mTickerView.invalidate(View.UI_GU_MODE);
             //mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             //mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out, null));
             if (mExpandedVisible) {
