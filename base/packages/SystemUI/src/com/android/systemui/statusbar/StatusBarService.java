@@ -801,11 +801,14 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             else if (mAnimY < mStatusBarView.getHeight()) {
                 if (SPEW) Slog.d(TAG, "Animation completed to collapsed state.");
                 mAnimating = false;
+                if (mExpanded) {
+                    mStatusBarView.invalidate(View.UI_GC_MODE);
+                }
                 updateExpandedViewPos(0);
                 performCollapse();
             }
             else {
-                updateExpandedViewPos((int)mAnimY);
+                //updateExpandedViewPos((int)mAnimY);
                 mCurAnimationTime += ANIM_FRAME_DURATION;
                 mHandler.sendMessageAtTime(mHandler.obtainMessage(MSG_ANIMATE), mCurAnimationTime);
             }
@@ -958,7 +961,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 mTrackingView.getLocationOnScreen(mAbsPos);
                 mViewDelta = mAbsPos[1] + mTrackingView.getHeight() - y;
             }
-            Log.i(TAG, "mViewDelta: "+mViewDelta+", y: "+y);
 
             if ((!mExpanded && y < hitSize) ||
                     (mExpanded && y > (mDisplay.getHeight()-hitSize))) {
@@ -969,15 +971,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 int x = (int)event.getRawX();
                 final int edgeBorder = mEdgeBorder;
                 if (x >= edgeBorder && x < mDisplay.getWidth() - edgeBorder) {
-                    //prepareTracking(y, !mExpanded);// opening if we're not already fully visible
-                    if (y <= mStatusBarView.getHeight()) {
-                    	prepareTracking(y, !mExpanded);
-                    	mVelocityTracker.addMovement(event);
-					}
-                    else {
-						prepareTracking((EXPANDED_FULL_OPEN - mViewDelta), !mExpanded);
-                    	mVelocityTracker.addMovement(event);
-					}
+                    prepareTracking(y, !mExpanded);// opening if we're not already fully visible
+                    mVelocityTracker.addMovement(event);
                 }
             }
         } else if (mTracking) {
@@ -1010,8 +1005,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 if (negative) {
                     vel = -vel;
                 }
-
-                mStatusBarView.invalidate(View.UI_GC_MODE);
 
                 performFling((int)event.getRawY(), vel, false);
             }
@@ -1332,8 +1325,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         }
         else {
             if (expandedPosition <= disph) {
-                pos = h + mCloseView.getHeight();
-                //pos = expandedPosition;
+                pos = expandedPosition;
             } else {
                 pos = disph;
             }

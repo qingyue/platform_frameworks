@@ -124,6 +124,7 @@ public class Clock extends TextView {
     final void updateClock() {
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());
+        postInvalidate(View.UI_GU_MODE);
     }
 
     private final CharSequence getSmallTime() {
