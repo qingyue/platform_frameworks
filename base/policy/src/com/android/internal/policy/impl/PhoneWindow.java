@@ -616,6 +616,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             }
             
             boolean playSoundEffect = false;
+            Log.i(TAG, "featureId: "+featureId);
             PanelFeatureState st = getPanelState(featureId, true);
             if (st.isOpen || st.isHandled) {
 
@@ -632,6 +633,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 EventLog.writeEvent(50001, 0);
 
                 // Show menu
+                Log.i(TAG, "onKeyUpPanel Show menu");
                 openPanel(st, event);
 
                 playSoundEffect = true;
@@ -1350,6 +1352,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             }
 
             case KeyEvent.KEYCODE_MENU: {
+                Log.i(TAG, "KeyEvent.KEYCODE_MENU")
                 onKeyUpPanel(featureId < 0 ? FEATURE_OPTIONS_PANEL : featureId,
                         event);
                 return true;
