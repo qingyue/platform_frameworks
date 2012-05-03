@@ -1512,11 +1512,11 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // restore the focused view
         int focusedViewId = savedInstanceState.getInt(FOCUSED_ID_TAG, View.NO_ID);
-        Log.i(TAG, "focusedViewId: "focusedViewId);
+        Log.i(TAG, "focusedViewId: "+focusedViewId);
         if (focusedViewId != View.NO_ID) {
             View needsFocus = mContentParent.findViewById(focusedViewId);
             if (needsFocus != null) {
-                Log.i(TAG, "needsFocus: "needsFocus);
+                Log.i(TAG, "needsFocus: "+needsFocus);
                 needsFocus.requestFocus();
             } else {
                 Log.i(TAG, "(needsFocus == null ");
