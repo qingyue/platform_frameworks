@@ -401,43 +401,54 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // Already open, return
         if (st.isOpen) {
+            Log.i(TAG, "ts.isOpen");
             return;
         }
 
         Callback cb = getCallback();
         if ((cb != null) && (!cb.onMenuOpened(st.featureId, st.menu))) {
             // Callback doesn't want the menu to open, reset any state
+            Log.i(TAG, "ts.closePanel");
             closePanel(st, true);
             return;
         }
 
         final WindowManager wm = getWindowManager();
         if (wm == null) {
+            Log.i(TAG, "WindowManager == null");
             return;
         }
 
         // Prepare panel (should have been done before, but just in case)
         if (!preparePanel(st, event)) {
+            Log.i(TAG, "(!preparePanel(st, event))");
             return;
         }
 
         if (st.decorView == null || st.refreshDecorView) {
+            Log.i(TAG, "(st.decorView == null || st.refreshDecorView)");
             if (st.decorView == null) {
+                Log.i(TAG, "(st.decorView == null)");
                 // Initialize the panel decor, this will populate st.decorView
-                if (!initializePanelDecor(st) || (st.decorView == null))
+                if (!initializePanelDecor(st) || (st.decorView == null)) {
+                    Log.i(TAG, "(!initializePanelDecor(st) || (st.decorView == null))");
                     return;
+                }
             } else if (st.refreshDecorView && (st.decorView.getChildCount() > 0)) {
                 // Decor needs refreshing, so remove its views
+                Log.i(TAG, "(st.refreshDecorView && (st.decorView.getChildCount() > 0))");
                 st.decorView.removeAllViews();
             }
 
             // This will populate st.shownPanelView
             if (!initializePanelContent(st) || (st.shownPanelView == null)) {
+                Log.i(TAG, "(!initializePanelContent(st) || (st.shownPanelView == null))");
                 return;
             }
 
             ViewGroup.LayoutParams lp = st.shownPanelView.getLayoutParams();
             if (lp == null) {
+                Log.i(TAG, "(lp == null)");
                 lp = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
             }
 
@@ -446,9 +457,11 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 // If the contents is fill parent for the width, set the
                 // corresponding background
                 backgroundResId = st.fullBackground;
+                Log.i(TAG, "backgroundResId: "+backgroundResId);
             } else {
                 // Otherwise, set the normal panel background
                 backgroundResId = st.background;
+                Log.i(TAG, "else backgroundResId: "+backgroundResId);
             }
             st.decorView.setWindowBackground(getContext().getResources().getDrawable(
                     backgroundResId));
@@ -460,11 +473,10 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
              * Give focus to the view, if it or one of its children does not
              * already have it.
              */
-            //if (!st.shownPanelView.hasFocus()) {
-            //    st.shownPanelView.requestFocus();
-            //}
-
-            st.shownPanelView.requestFocus();
+            if (!st.shownPanelView.hasFocus()) {
+                Log.i(TAG, "(!st.shownPanelView.hasFocus())");
+                st.shownPanelView.requestFocus();
+            }
         }
 
         st.isOpen = true;
@@ -481,7 +493,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         lp.windowAnimations = st.windowAnimations;
         
         wm.addView(st.decorView, lp);
-        // Log.v(TAG, "Adding main menu to window manager.");
+        Log.v(TAG, "Adding main menu to window manager.");
     }
 
     @Override
