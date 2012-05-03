@@ -393,6 +393,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
     @Override
     public final void openPanel(int featureId, KeyEvent event) {
+        Log.i(TAG, "openPanel(int featureId, KeyEvent event)");
         openPanel(getPanelState(featureId, true), event);
     }
 
@@ -555,6 +556,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         if (st.isOpen) {
             closePanel(st, true);
         } else {
+            Log.i(TAG, "togglePanel featureId: "+featureId);
             openPanel(st, event);
         }
     }
@@ -815,6 +817,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         // Set the expanded mode state
         st.isInExpandedMode = newExpandedMode;
 
+        Log.i(TAG, "reopenMenu st.isInExpandedMode: "+st.isInExpandedMode);
         openPanel(st, null);
     }
 
@@ -1352,7 +1355,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             }
 
             case KeyEvent.KEYCODE_MENU: {
-                Log.i(TAG, "KeyEvent.KEYCODE_MENU")
+                Log.i(TAG, "KeyEvent.KEYCODE_MENU");
                 onKeyUpPanel(featureId < 0 ? FEATURE_OPTIONS_PANEL : featureId,
                         event);
                 return true;
@@ -1586,6 +1589,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             // opens it when we are resuming.
             if ((st != null) && !st.isOpen && st.wasLastOpen) {
                 st.isInExpandedMode = st.wasLastExpanded;
+                Log.i(TAG, "openPanelsAfterRestore st.isInExpandedMode: "+st.isInExpandedMode);
                 openPanel(st, null);
             }
         }
@@ -1786,7 +1790,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             int y = (int)event.getY();
             if (action == MotionEvent.ACTION_MOVE) {
                 if (y < (getHeight()-30)) {
-                    Log.i(TAG, "Opening!");
+                    Log.i(TAG, "Opening! FEATURE_OPTIONS_PANEL: "+FEATURE_OPTIONS_PANEL);
                     openPanel(FEATURE_OPTIONS_PANEL, new KeyEvent(
                             KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU));
                     mWatchingForMenu = false;
