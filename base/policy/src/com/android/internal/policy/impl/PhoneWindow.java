@@ -1472,10 +1472,13 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // save the focused view id
         View focusedView = mContentParent.findFocus();
+        Log.i(TAG, "focusedView: "+focusedView);
         if (focusedView != null) {
             if (focusedView.getId() != View.NO_ID) {
+                Log.i(TAG, "focusedView.getId(): "+focusedView.getId());
                 outState.putInt(FOCUSED_ID_TAG, focusedView.getId());
             } else {
+                Log.i(TAG, "focusedView.getId() == View.NO_ID");
                 if (Config.LOGD) {
                     Log.d(TAG, "couldn't save which view has focus because the focused view "
                             + focusedView + " has no id.");
@@ -1487,6 +1490,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         SparseArray<Parcelable> panelStates = new SparseArray<Parcelable>();
         savePanelState(panelStates);
         if (panelStates.size() > 0) {
+            Log.i(TAG, "panelStates.size(): "+panelStates.size());
             outState.putSparseParcelableArray(PANELS_TAG, panelStates);
         }
 
@@ -1508,11 +1512,14 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // restore the focused view
         int focusedViewId = savedInstanceState.getInt(FOCUSED_ID_TAG, View.NO_ID);
+        Log.i(TAG, "focusedViewId: "focusedViewId);
         if (focusedViewId != View.NO_ID) {
             View needsFocus = mContentParent.findViewById(focusedViewId);
             if (needsFocus != null) {
+                Log.i(TAG, "needsFocus: "needsFocus);
                 needsFocus.requestFocus();
             } else {
+                Log.i(TAG, "(needsFocus == null ");
                 Log.w(TAG,
                         "Previously focused view reported id " + focusedViewId
                                 + " during save, but can't be found during restore.");
@@ -1522,6 +1529,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         // restore the panels
         SparseArray<Parcelable> panelStates = savedInstanceState.getSparseParcelableArray(PANELS_TAG);
         if (panelStates != null) {
+            Log.i(TAG, "panelStates: "+panelStates);
             restorePanelState(panelStates);
         }
     }
