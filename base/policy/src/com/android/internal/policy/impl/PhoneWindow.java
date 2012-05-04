@@ -460,11 +460,9 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
              * Give focus to the view, if it or one of its children does not
              * already have it.
              */
-            //if (!st.shownPanelView.hasFocus()) {
-            //    st.shownPanelView.requestFocus();
-            //}
-
-            st.shownPanelView.requestFocus();
+            if (!st.shownPanelView.hasFocus()) {
+                st.shownPanelView.requestFocus();
+            }
         }
 
         st.isOpen = true;
