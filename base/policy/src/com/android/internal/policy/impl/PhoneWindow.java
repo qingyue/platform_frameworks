@@ -393,6 +393,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
     @Override
     public final void openPanel(int featureId, KeyEvent event) {
+        Log.i(TAG, "openPanel(int featureId, KeyEvent event)");
         openPanel(getPanelState(featureId, true), event);
     }
 
@@ -401,43 +402,54 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // Already open, return
         if (st.isOpen) {
+            Log.i(TAG, "ts.isOpen");
             return;
         }
 
         Callback cb = getCallback();
         if ((cb != null) && (!cb.onMenuOpened(st.featureId, st.menu))) {
             // Callback doesn't want the menu to open, reset any state
+            Log.i(TAG, "ts.closePanel");
             closePanel(st, true);
             return;
         }
 
         final WindowManager wm = getWindowManager();
         if (wm == null) {
+            Log.i(TAG, "WindowManager == null");
             return;
         }
 
         // Prepare panel (should have been done before, but just in case)
         if (!preparePanel(st, event)) {
+            Log.i(TAG, "(!preparePanel(st, event))");
             return;
         }
 
         if (st.decorView == null || st.refreshDecorView) {
+            Log.i(TAG, "(st.decorView == null || st.refreshDecorView)");
             if (st.decorView == null) {
+                Log.i(TAG, "(st.decorView == null)");
                 // Initialize the panel decor, this will populate st.decorView
-                if (!initializePanelDecor(st) || (st.decorView == null))
+                if (!initializePanelDecor(st) || (st.decorView == null)) {
+                    Log.i(TAG, "(!initializePanelDecor(st) || (st.decorView == null))");
                     return;
+                }
             } else if (st.refreshDecorView && (st.decorView.getChildCount() > 0)) {
                 // Decor needs refreshing, so remove its views
+                Log.i(TAG, "(st.refreshDecorView && (st.decorView.getChildCount() > 0))");
                 st.decorView.removeAllViews();
             }
 
             // This will populate st.shownPanelView
             if (!initializePanelContent(st) || (st.shownPanelView == null)) {
+                Log.i(TAG, "(!initializePanelContent(st) || (st.shownPanelView == null))");
                 return;
             }
 
             ViewGroup.LayoutParams lp = st.shownPanelView.getLayoutParams();
             if (lp == null) {
+                Log.i(TAG, "(lp == null)");
                 lp = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
             }
 
@@ -446,9 +458,11 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 // If the contents is fill parent for the width, set the
                 // corresponding background
                 backgroundResId = st.fullBackground;
+                Log.i(TAG, "backgroundResId: "+backgroundResId);
             } else {
                 // Otherwise, set the normal panel background
                 backgroundResId = st.background;
+                Log.i(TAG, "else backgroundResId: "+backgroundResId);
             }
             st.decorView.setWindowBackground(getContext().getResources().getDrawable(
                     backgroundResId));
@@ -479,7 +493,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         lp.windowAnimations = st.windowAnimations;
         
         wm.addView(st.decorView, lp);
-        // Log.v(TAG, "Adding main menu to window manager.");
+        Log.v(TAG, "Adding main menu to window manager.");
     }
 
     @Override
@@ -541,6 +555,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         if (st.isOpen) {
             closePanel(st, true);
         } else {
+            Log.i(TAG, "togglePanel featureId: "+featureId);
             openPanel(st, event);
         }
     }
@@ -602,6 +617,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             }
             
             boolean playSoundEffect = false;
+            Log.i(TAG, "featureId: "+featureId);
             PanelFeatureState st = getPanelState(featureId, true);
             if (st.isOpen || st.isHandled) {
 
@@ -618,6 +634,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 EventLog.writeEvent(50001, 0);
 
                 // Show menu
+                Log.i(TAG, "onKeyUpPanel Show menu");
                 openPanel(st, event);
 
                 playSoundEffect = true;
@@ -799,6 +816,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         // Set the expanded mode state
         st.isInExpandedMode = newExpandedMode;
 
+        Log.i(TAG, "reopenMenu st.isInExpandedMode: "+st.isInExpandedMode);
         openPanel(st, null);
     }
 
@@ -1336,6 +1354,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             }
 
             case KeyEvent.KEYCODE_MENU: {
+                Log.i(TAG, "KeyEvent.KEYCODE_MENU");
                 onKeyUpPanel(featureId < 0 ? FEATURE_OPTIONS_PANEL : featureId,
                         event);
                 return true;
@@ -1452,10 +1471,13 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // save the focused view id
         View focusedView = mContentParent.findFocus();
+        Log.i(TAG, "focusedView: "+focusedView);
         if (focusedView != null) {
             if (focusedView.getId() != View.NO_ID) {
+                Log.i(TAG, "focusedView.getId(): "+focusedView.getId());
                 outState.putInt(FOCUSED_ID_TAG, focusedView.getId());
             } else {
+                Log.i(TAG, "focusedView.getId() == View.NO_ID");
                 if (Config.LOGD) {
                     Log.d(TAG, "couldn't save which view has focus because the focused view "
                             + focusedView + " has no id.");
@@ -1467,6 +1489,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         SparseArray<Parcelable> panelStates = new SparseArray<Parcelable>();
         savePanelState(panelStates);
         if (panelStates.size() > 0) {
+            Log.i(TAG, "panelStates.size(): "+panelStates.size());
             outState.putSparseParcelableArray(PANELS_TAG, panelStates);
         }
 
@@ -1488,11 +1511,14 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // restore the focused view
         int focusedViewId = savedInstanceState.getInt(FOCUSED_ID_TAG, View.NO_ID);
+        Log.i(TAG, "focusedViewId: "+focusedViewId);
         if (focusedViewId != View.NO_ID) {
             View needsFocus = mContentParent.findViewById(focusedViewId);
             if (needsFocus != null) {
+                Log.i(TAG, "needsFocus: "+needsFocus);
                 needsFocus.requestFocus();
             } else {
+                Log.i(TAG, "(needsFocus == null ");
                 Log.w(TAG,
                         "Previously focused view reported id " + focusedViewId
                                 + " during save, but can't be found during restore.");
@@ -1502,6 +1528,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         // restore the panels
         SparseArray<Parcelable> panelStates = savedInstanceState.getSparseParcelableArray(PANELS_TAG);
         if (panelStates != null) {
+            Log.i(TAG, "panelStates: "+panelStates);
             restorePanelState(panelStates);
         }
     }
@@ -1569,6 +1596,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             // opens it when we are resuming.
             if ((st != null) && !st.isOpen && st.wasLastOpen) {
                 st.isInExpandedMode = st.wasLastExpanded;
+                Log.i(TAG, "openPanelsAfterRestore st.isInExpandedMode: "+st.isInExpandedMode);
                 openPanel(st, null);
             }
         }
@@ -1769,7 +1797,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             int y = (int)event.getY();
             if (action == MotionEvent.ACTION_MOVE) {
                 if (y < (getHeight()-30)) {
-                    Log.i(TAG, "Opening!");
+                    Log.i(TAG, "Opening! FEATURE_OPTIONS_PANEL: "+FEATURE_OPTIONS_PANEL);
                     openPanel(FEATURE_OPTIONS_PANEL, new KeyEvent(
                             KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU));
                     mWatchingForMenu = false;
