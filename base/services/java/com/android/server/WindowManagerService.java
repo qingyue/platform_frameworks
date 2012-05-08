@@ -7476,7 +7476,7 @@ public class WindowManagerService extends IWindowManager.Stub
         void dump(PrintWriter pw, String prefix) {
             pw.print(prefix); pw.print("token="); pw.println(token);
             pw.print(prefix); pw.print("windows="); pw.println(windows);
-            pw.print(prefix); pw.print("windowType="); pw.print(windowType);
+            //pw.print(prefix); pw.print("windowType="); pw.print(windowType);
                     pw.print(" hidden="); pw.print(hidden);
                     pw.print(" hasVisible="); pw.println(hasVisible);
             if (waitingToShow || waitingToHide || sendingToBottom || sendingToTop) {

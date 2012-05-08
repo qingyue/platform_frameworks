@@ -796,7 +796,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             try {
                 if (DEBUG) Slog.v(TAG, "Adding window token: " + mCurToken);
                 mIWindowManager.addWindowToken(mCurToken,
-                        WindowManager.LayoutParams.TYPE_SYSTEM_ERROR);
+                        WindowManager.LayoutParams.TYPE_INPUT_METHOD);
             } catch (RemoteException e) {
             }
             return new InputBindResult(null, mCurId, mCurSeq);
