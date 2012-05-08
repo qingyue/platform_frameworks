@@ -133,7 +133,7 @@ class SoftInputWindow extends Dialog {
     private void initDockWindow() {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
 
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        lp.type = WindowManager.LayoutParams.TYPE_INPUT_METHOD;
         lp.setTitle("InputMethod");
 
         lp.gravity = Gravity.BOTTOM;
