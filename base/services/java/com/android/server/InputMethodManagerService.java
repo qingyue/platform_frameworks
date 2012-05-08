@@ -796,7 +796,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             try {
                 if (DEBUG) Slog.v(TAG, "Adding window token: " + mCurToken);
                 mIWindowManager.addWindowToken(mCurToken,
-                        WindowManager.LayoutParams.TYPE_INPUT_METHOD);
+                        WindowManager.LayoutParams.TYPE_SYSTEM_ERROR);
             } catch (RemoteException e) {
             }
             return new InputBindResult(null, mCurId, mCurSeq);
@@ -1580,8 +1580,8 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                     });
 
             mSwitchingDialog = mDialogBuilder.create();
-            //mSwitchingDialog.getWindow().setType(
-            //        WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG);
+            mSwitchingDialog.getWindow().setType(
+                    WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG);
             mSwitchingDialog.show();
         }
     }
