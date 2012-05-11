@@ -45,6 +45,12 @@
             android:visibility="invisible">
         </FrameLayout>
 
+        <FrameLayout android:id="@+id/contentArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+        </FrameLayout>
+
     </LinearLayout>
             
     <FrameLayout android:id="@android:id/inputArea"

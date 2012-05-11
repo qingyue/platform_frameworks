@@ -234,6 +234,10 @@ public class InputMethodService extends AbstractInputMethodService {
     FrameLayout mExtractFrame;
     FrameLayout mCandidatesFrame;
     FrameLayout mInputFrame;
+    /**
+     *{@hide}
+     */
+    FrameLayout mContentFrame;
     
     IBinder mToken;
     
@@ -601,6 +605,7 @@ public class InputMethodService extends AbstractInputMethodService {
         mFullscreenApplied = false;
         
         mCandidatesFrame = (FrameLayout)mRootView.findViewById(android.R.id.candidatesArea);
+        mContentFram = (FrameLayout)mRootView.findViewById(com.android.internal.R.id.contentArea);
         mInputFrame = (FrameLayout)mRootView.findViewById(android.R.id.inputArea);
         mInputView = null;
         mIsInputViewShown = false;
@@ -1089,7 +1094,21 @@ public class InputMethodService extends AbstractInputMethodService {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
-    
+
+    /**
+     *onyx
+     */
+    public void setContentView(View view) {
+        if (mContentFrame != View.VISIBLE) {
+			mContentFrame.setVisibility(View.VISIBLE);
+	    }
+
+        mContentFrame.removeAllViews();
+        mContentFrame.addView(view, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
     /**
      * Replaces the current input view with a new one.  You only need to
      * call this when dynamically changing the view; normally, you should
