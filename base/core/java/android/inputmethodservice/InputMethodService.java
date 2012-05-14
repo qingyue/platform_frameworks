@@ -605,7 +605,7 @@ public class InputMethodService extends AbstractInputMethodService {
         mFullscreenApplied = false;
         
         mCandidatesFrame = (FrameLayout)mRootView.findViewById(android.R.id.candidatesArea);
-        mContentFram = (FrameLayout)mRootView.findViewById(com.android.internal.R.id.contentArea);
+        mContentFrame = (FrameLayout)mRootView.findViewById(com.android.internal.R.id.contentArea);
         mInputFrame = (FrameLayout)mRootView.findViewById(android.R.id.inputArea);
         mInputView = null;
         mIsInputViewShown = false;
@@ -1094,13 +1094,11 @@ public class InputMethodService extends AbstractInputMethodService {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
-
-    /**
-     *onyx
-     */
-    public void setContentView(View view) {
-        if (mContentFrame != View.VISIBLE) {
+    
+    public void setContentFrameView(View view) {
+        if (mContentFrame.getVisibility() != View.VISIBLE) {
 			mContentFrame.setVisibility(View.VISIBLE);
+            Log.i(TAG, "mContentFrame.setVisibility(View.VISIBLE)");
 	    }
 
         mContentFrame.removeAllViews();
