@@ -72,6 +72,7 @@
 //EINK_CONVERT_MODE_NOCONVERT|EINK_INVERT_MODE_NOINVERT|EINK_DITHER_MODE_NODITHER|EINK_COMBINE_MODE_NOCOMBINE|
 //EINK_WAIT_MODE_WAIT|EINK_UPDATE_MODE_PARTIAL|EINK_AUTO_MODE_REGIONAL|EINK_WAVEFORM_MODE_AUTO;
 #define UI_DEFAULT_MODE 0x0004
+#define UI_FULL_MODE 0x0064
 #define SPECIAL_MODE_MASK 0x0700
 
 namespace android {
@@ -103,7 +104,9 @@ SurfaceFlinger::SurfaceFlinger()
         mLastTransactionTime(0),
         mBootFinished(false),
         mConsoleSignals(0),
-        mSecureFrameBuffer(0)
+        mSecureFrameBuffer(0),
+	mSurfaceInitUpdate(false),
+        mSkipNextInitUpdate(false)
 {
     //fix the maximum layer is 10;
     mRegionsDirtyReglist = new DirtyRegList[MAX_LAYER];
@@ -510,13 +513,13 @@ void SurfaceFlinger::getDirtyGroup()
                 {
                     mRegionsDirtyReglist[i].AddDirtyRegionNodeToEnd(pDirtyRegNode->mDirtyRegion.getBounds(),pDirtyRegNode->mDirtyRegionMode);
                     mNeedspecialupdate ++;
-                    //LOGI("add special region layer=%d, mRegionsDirtyReglist=%d \n",i,mRegionsDirtyReglist[i].mDirtyRegListLength);
+                    LOGI("add special region layer=%d, mRegionsDirtyReglist=%d \n",i,mRegionsDirtyReglist[i].mDirtyRegListLength);
                 }
                 else
                 {
                     mLayersDirtyReglist[i].AddDirtyRegionNodeToEnd(pDirtyRegNode->mDirtyRegion.getBounds(), pDirtyRegNode->mDirtyRegionMode);
-                    //LOGI("getDirtyGroup layer=%d, left=%d, top=%d, right=%d, bottom=%d \n",i, pDirtyRegNode->mDirtyRegion.getBounds().left, pDirtyRegNode->mDirtyRegion.getBounds().top,
-                    //    pDirtyRegNode->mDirtyRegion.getBounds().right,pDirtyRegNode->mDirtyRegion.getBounds().bottom);
+                    LOGI("getDirtyGroup layer=%d, left=%d, top=%d, right=%d, bottom=%d \n",i, pDirtyRegNode->mDirtyRegion.getBounds().left, pDirtyRegNode->mDirtyRegion.getBounds().top,
+                        pDirtyRegNode->mDirtyRegion.getBounds().right,pDirtyRegNode->mDirtyRegion.getBounds().bottom);
                 }
             }
         }
@@ -525,8 +528,8 @@ void SurfaceFlinger::getDirtyGroup()
     for (size_t i=0 ; i<count ; i++)
     {
         int length = mRegionsDirtyReglist[i].mDirtyRegListLength;
-        //LOGI("layer=%d, mRegionsDirtyReglist=%d \n",i,length);
-        //LOGI("layer=%d, mLayersDirtyReglist=%d \n",i,mLayersDirtyReglist[i].mDirtyRegListLength);
+        LOGI("layer=%d, mRegionsDirtyReglist=%d \n",i,length);
+        LOGI("layer=%d, mLayersDirtyReglist=%d \n",i,mLayersDirtyReglist[i].mDirtyRegListLength);
         for (int j = 0; j < mLayersDirtyReglist[i].mDirtyRegListLength; j ++)
         {
             DirtyRegionNode *pDirtyRegNode = NULL;
@@ -534,13 +537,13 @@ void SurfaceFlinger::getDirtyGroup()
 
             if (pDirtyRegNode != NULL)
             {
-                //LOGI("mDirtyRegionMode=%d ",pDirtyRegNode->mDirtyRegionMode);
+                LOGI("mDirtyRegionMode=%d ",pDirtyRegNode->mDirtyRegionMode);
                 if((pDirtyRegNode->mDirtyRegionMode & SPECIAL_MODE_MASK) == 0)
                 {
                     if(true == mRegionsDirtyReglist[i].DeleteDirtyRegionNode(pDirtyRegNode->mDirtyRegion.getBounds()))
                     {
-                        // mNeedspecialupdate --;
-                        //LOGI("delete special region layer=%d, mRegionsDirtyReglist=%d \n",i,mRegionsDirtyReglist[i].mDirtyRegListLength);
+                        mNeedspecialupdate --;
+                        LOGI("delete special region layer=%d, mRegionsDirtyReglist=%d \n",i,mRegionsDirtyReglist[i].mDirtyRegListLength);
                     }
                 }
             }
@@ -604,8 +607,8 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
         if (bNeedPartialupdate == true) break;
     }
 
-    //LOGI("EinkOptPostFramebuffer mInvalidRegion left=%d, top=%d, right=%d, bottom=%d \n",mInvalidRegion.getBounds().left, mInvalidRegion.getBounds().top,
-    //              mInvalidRegion.getBounds().right,mInvalidRegion.getBounds().bottom);
+    LOGI("EOPostFB mInvalRegion left=%d, top=%d, right=%d, bottom=%d \n",mInvalidRegion.getBounds().left, mInvalidRegion.getBounds().top,
+                  mInvalidRegion.getBounds().right,mInvalidRegion.getBounds().bottom);
     if ((mNeedspecialupdate > 0) )
     {
         LOGI("------special update-----------");
@@ -645,8 +648,8 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
         {
             allrectList.add(rectList[j]);
             allupdatemode.add(UI_DEFAULT_MODE);
-            //LOGI("EinkOptPostFramebuffer rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d \n",allnum, allrectList[allnum].left, allrectList[allnum].top,
-            //      allrectList[allnum].right,allrectList[allnum].bottom,UI_DEFAULT_MODE);
+            LOGI("EOPostFB rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d \n",allnum, allrectList[allnum].left, allrectList[allnum].top,
+                  allrectList[allnum].right,allrectList[allnum].bottom,UI_DEFAULT_MODE);
             allnum++;
         }
 
@@ -661,8 +664,8 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
                     lInvalidRegion = pInvalidRegion.intersect(pDirtyRegNode->mDirtyRegion);
                     allrectList.add(lInvalidRegion.getBounds());
                     allupdatemode.add(pDirtyRegNode->mDirtyRegionMode);
-                    //LOGI("EinkOptPostFramebuffer rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d\n",allnum, allrectList[allnum].left, allrectList[allnum].top,
-                    //    allrectList[allnum].right,allrectList[allnum].bottom,pDirtyRegNode->mDirtyRegionMode);
+                    LOGI("EOPostFB rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d\n",allnum, allrectList[allnum].left, allrectList[allnum].top,
+                        allrectList[allnum].right,allrectList[allnum].bottom,pDirtyRegNode->mDirtyRegionMode);
                     allnum ++;
                 }
             }
@@ -678,8 +681,8 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
                 {
                     allrectList.add(pDirtyRegNode->mDirtyRegion.getBounds());
                     allupdatemode.add(pDirtyRegNode->mDirtyRegionMode)   ;
-                    //LOGI("EinkOptPostFramebuffer rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d\n",allnum, allrectList[allnum].left, allrectList[allnum].top,
-                    //    allrectList[allnum].right,allrectList[allnum].bottom,pDirtyRegNode->mDirtyRegionMode);
+                    LOGI("EOPostFB rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d\n",allnum, allrectList[allnum].left, allrectList[allnum].top,
+                        allrectList[allnum].right,allrectList[allnum].bottom,pDirtyRegNode->mDirtyRegionMode);
                     allnum++;
                 }
             }
@@ -732,8 +735,8 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
                     lInvalidRegion = pInvalidRegion.intersect(pDirtyRegNode->mDirtyRegion);
                     allrectList.add(lInvalidRegion.getBounds());
                     allupdatemode.add(pDirtyRegNode->mDirtyRegionMode);
-                    //LOGI("EinkOptPostFramebuffer rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d\n",allnum, allrectList[allnum].left, allrectList[allnum].top,
-                    //    allrectList[allnum].right,allrectList[allnum].bottom,pDirtyRegNode->mDirtyRegionMode);
+                    LOGI("EOPostFB rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d\n",allnum, allrectList[allnum].left, allrectList[allnum].top,
+                        allrectList[allnum].right,allrectList[allnum].bottom,pDirtyRegNode->mDirtyRegionMode);
                     allnum ++;
                 }
             }
@@ -742,13 +745,26 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
     }
     else
     {
-        LOGI("------normal update-----------");
+        LOGI("------normal update------, flinger = %p\n", this);
         Vector<Rect> allrectList;
         Vector<int>  allupdatemode;
         allrectList.add(mInvalidRegion.getBounds());
-        allupdatemode.add(UI_DEFAULT_MODE);
-        //LOGI("EinkOptPostFramebuffer default rect   left=%d, top=%d, right=%d, bottom=%d \n", allrectList[0].left, allrectList[0].top,
-        //          allrectList[0].right,allrectList[0].bottom);
+
+        if (mSurfaceInitUpdate && !mSkipNextInitUpdate)
+        {
+            LOGI("--init update---\n");
+            allupdatemode.add(UI_FULL_MODE);
+            //mSurfaceInitUpdate = false;
+            mSkipNextInitUpdate = true;
+        }
+	else
+        {
+            LOGI("---default update---\n");
+            allupdatemode.add(UI_DEFAULT_MODE);
+            mSkipNextInitUpdate = false;
+        }
+        LOGI("EOPostFB rect left=%d, top=%d, right=%d, bottom=%d \n", allrectList[0].left, allrectList[0].top,
+                  allrectList[0].right,allrectList[0].bottom);
         postFramebuffer(mInvalidRegion, allrectList,allupdatemode,1);
     }
 
@@ -805,6 +821,7 @@ void SurfaceFlinger::postFramebuffer()
          break;
         }
         //hw.flip(mInvalidRegion);
+        LOGI("--->flip, secRotation=%x\n", secRotation);
         hw.flip(mInvalidRegion,secRotation);
         #else
         hw.flip(mInvalidRegion);
@@ -925,6 +942,8 @@ void SurfaceFlinger::handleTransactionLocked(
 
             mVisibleRegionsDirty = true;
             mDirtyRegion.set(hw.bounds());
+            LOGI("--->Screen orientation change, set init update\n");
+            mSurfaceInitUpdate = true;
         }
 
         if (mCurrentState.freezeDisplay != mDrawingState.freezeDisplay) {
@@ -1158,6 +1177,7 @@ void SurfaceFlinger::handlePageFlip()
                 const Region reminder(screenRegion.subtract(visibleRegion));
                 if (reminder.isEmpty()) {
                     // fullscreen candidate!
+                    LOGI("--->BYPASS found fullscrfeen candidate!\n");
                     bypassLayer = candidate;
                 }
             }
@@ -1170,6 +1190,26 @@ void SurfaceFlinger::handlePageFlip()
 
     unlockPageFlip(currentLayers);
     mDirtyRegion.andSelf(screenRegion);
+    LOGI("--->mDirtyRegion(left=%d, top=%d, right =%d, bottom=%d\n)", mDirtyRegion.getBounds().left, mDirtyRegion.getBounds().top, mDirtyRegion.getBounds().right, mDirtyRegion.getBounds().bottom);
+    //WO, if the dirty region is whole screen, set init update flag
+    if (mBootFinished)
+    {
+        if (mDirtyRegion.getBounds() == hw.bounds())
+        {
+            LOGI("===>Set init update flag<===\n");
+            mSurfaceInitUpdate = true;
+        }
+        else if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == 35))
+        {
+            LOGI("--->Set init update flag<---\n");
+            mSurfaceInitUpdate = true;    
+        }
+        else
+        {
+            LOGI("===>Set default update flag<===\n");
+            mSurfaceInitUpdate = false;
+        }
+    }
 }
 
 bool SurfaceFlinger::lockPageFlip(const LayerVector& currentLayers)
@@ -1243,10 +1283,14 @@ void SurfaceFlinger::handleRepaint()
             // we need to redraw everything (the whole screen)
             mDirtyRegion.set(hw.bounds());
             mInvalidRegion = mDirtyRegion;
+            LOGI("--->Screen full repaint, set init update\n");
+            mSurfaceInitUpdate = true;
         }
     }
 
-    // compose all surfaces
+    // compose all LOGI("--->BYPASS found fullscrfeen candidate!\n");
+    //  LOGI("--->BYPASS found fullscrfeen candidate!\n");
+    //  surfaces
     composeSurfaces(mDirtyRegion);
 
     // clear the dirty regions
@@ -1289,13 +1333,13 @@ void SurfaceFlinger::composeSurfaces(const Region& dirty)
                     mRegionsDirtyReglist[i].GetDiryRegionNode(j,pDirtyRegNode);
                     if (pDirtyRegNode != NULL)
                     {
-                        //LOGI("composeSurfaces  exposedRegion layer=%d, left=%d, top=%d, right=%d, bottom=%d \n",i,exposedRegion.getBounds().left, exposedRegion.getBounds().top,
-                        //            exposedRegion.getBounds().right,exposedRegion.getBounds().bottom);
+                        LOGI("composeSurfaces  exposedRegion layer=%d, left=%d, top=%d, right=%d, bottom=%d \n",i,exposedRegion.getBounds().left, exposedRegion.getBounds().top,
+                                    exposedRegion.getBounds().right,exposedRegion.getBounds().bottom);
                         const Region specialeclip(exposedRegion.intersect(pDirtyRegNode->mDirtyRegion));
                         if(!specialeclip.isEmpty())
                         {
-                        //LOGI("composeSurfaces  specialeclip layer=%d, left=%d, top=%d, right=%d, bottom=%d \n",i,specialeclip.getBounds().left, specialeclip.getBounds().top,
-                        //        specialeclip.getBounds().right,specialeclip.getBounds().bottom);
+                        LOGI("composeSurfaces  specialeclip layer=%d, left=%d, top=%d, right=%d, bottom=%d \n",i,specialeclip.getBounds().left, specialeclip.getBounds().top,
+                                specialeclip.getBounds().right,specialeclip.getBounds().bottom);
                         mReupdateDirtyReglist[i].AddDirtyRegionNodeToEnd(specialeclip.getBounds(), pDirtyRegNode->mDirtyRegionMode);
                         }
                     }
@@ -1368,6 +1412,7 @@ void SurfaceFlinger::debugFlashRegions()
     Vector<int>  allupdatemode;
     allrectList.add(mInvalidRegion.getBounds());
     allupdatemode.add(UI_DEFAULT_MODE);
+    LOGI("--->DebugFlashRegions!\n");
     hw.flip(mInvalidRegion, allrectList, allupdatemode, 1);
 #else
     hw.flip(mInvalidRegion);
@@ -1624,7 +1669,7 @@ sp<ISurface> SurfaceFlinger::createSurface(const sp<Client>& client, int pid,
         return surfaceHandle;
     }
     
-    //LOGD("createSurface for pid %d (%d x %d)", pid, w, h);
+    LOGD("createSurface for pid %d (%d x %d)", pid, w, h);
     sp<Layer> normalLayer;
     switch (flags & eFXSurfaceMask) {
         case eFXSurfaceNormal:
@@ -1662,6 +1707,10 @@ sp<ISurface> SurfaceFlinger::createSurface(const sp<Client>& client, int pid,
         }
 
         setTransactionFlags(eTransactionNeeded);
+
+	//WO, init surface update
+	//LOGI("--->createSUrface, set init update\n");
+	//mSurfaceInitUpdate = true;
     }
 
     return surfaceHandle;
@@ -1743,6 +1792,7 @@ status_t SurfaceFlinger::removeSurface(const sp<Client>& client, SurfaceID sid)
      * in the purgatory queue, so it's not destroyed right-away (we need
      * to wait for all client's references to go away first).
      */
+    LOGI("--->removeSurface!\n");
 
     status_t err = NAME_NOT_FOUND;
     Mutex::Autolock _l(mStateLock);
@@ -1759,7 +1809,8 @@ status_t SurfaceFlinger::removeSurface(const sp<Client>& client, SurfaceID sid)
 status_t SurfaceFlinger::destroySurface(const sp<LayerBaseClient>& layer)
 {
     // called by ~ISurface() when all references are gone
-    
+    LOGI("--->DestroySurface!\n");
+
     class MessageDestroySurface : public MessageBase {
         SurfaceFlinger* flinger;
         sp<LayerBaseClient> layer;
@@ -1848,6 +1899,8 @@ status_t SurfaceFlinger::setClientState(
 
 void SurfaceFlinger::screenReleased(int dpy)
 {
+    LOGI("--->screenReleased %d\n", dpy);
+
     // this may be called by a signal handler, we can't do too much in here
     android_atomic_or(eConsoleReleased, &mConsoleSignals);
     signalEvent();
@@ -1855,6 +1908,8 @@ void SurfaceFlinger::screenReleased(int dpy)
 
 void SurfaceFlinger::screenAcquired(int dpy)
 {
+    LOGI("--->screenAcquired %d\n", dpy);
+
     // this may be called by a signal handler, we can't do too much in here
     android_atomic_or(eConsoleAcquired, &mConsoleSignals);
     signalEvent();
@@ -2010,6 +2065,7 @@ status_t SurfaceFlinger::onTransact(
                 Mutex::Autolock _l(mStateLock);
                 const DisplayHardware& hw(graphicPlane(0).displayHardware());
                 mDirtyRegion.set(hw.bounds()); // careful that's not thread-safe
+                LOGI("--->transact 1004!\n");
                 signalEvent();
                 return NO_ERROR;
             }
@@ -2505,6 +2561,8 @@ status_t SurfaceFlinger::turnElectronBeamOnImplLocked(int32_t mode)
 
     // make sure to redraw the whole screen when the animation is done
     mDirtyRegion.set(hw.bounds());
+    LOGI("--->turnElectronBeamOn, set init update\n");
+    mSurfaceInitUpdate = true;
     signalEvent();
 
     return NO_ERROR;

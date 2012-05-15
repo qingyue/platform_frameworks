@@ -442,6 +442,10 @@ private:
    #ifdef SECOND_DISPLAY_SUPPORT
    int                                      mTopOrientation;
    #endif
+
+   //WO, mark surface init update
+   bool		mSurfaceInitUpdate;
+   bool         mSkipNextInitUpdate;
 };
 
 // ---------------------------------------------------------------------------
