@@ -1098,7 +1098,6 @@ public class InputMethodService extends AbstractInputMethodService {
     public void setContentFrameView(View view) {
         if (mContentFrame.getVisibility() != View.VISIBLE) {
 			mContentFrame.setVisibility(View.VISIBLE);
-            Log.i(TAG, "mContentFrame.setVisibility(View.VISIBLE)");
 	    }
 
         mContentFrame.removeAllViews();
