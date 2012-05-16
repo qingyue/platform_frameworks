@@ -56,6 +56,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -1081,7 +1083,29 @@ public class InputMethodService extends AbstractInputMethodService {
             mExtractAction = null;
         }
     }
-    
+   
+    mExtractEditText.addTextChangedListener(new TextWatcher() {
+			
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			// TODO Auto-generated method stub
+			Log.i(TAG, "onTextChanged CharSequence: "+s.toString());
+		}
+			
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// TODO Auto-generated method stub
+			Log.i(TAG, "beforeTextChanged CharSequence: "+s.toString());
+		}
+		
+		@Override
+		public void afterTextChanged(Editable s) {
+			// TODO Auto-generated method stub
+			Log.i(TAG, "afterTextChanged CharSequence: "+s.toString());
+		}
+	});
+
     /**
      * Replaces the current candidates view with a new one.  You only need to
      * call this when dynamically changing the view; normally, you should
