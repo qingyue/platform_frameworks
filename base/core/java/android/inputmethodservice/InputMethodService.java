@@ -1535,6 +1535,7 @@ public class InputMethodService extends AbstractInputMethodService {
      * method is running in fullscreen mode.
      */
     public void onUpdateExtractedText(int token, ExtractedText text) {
+        Log.i(TAG, "onUpdateExtractedText text: "+text.text);
         if (mExtractedToken != token) {
             return;
         }
@@ -1545,6 +1546,7 @@ public class InputMethodService extends AbstractInputMethodService {
                 Log.i(TAG, "mExtractEditText add: "+text.text.toString());
             }
         }
+        Log.i(TAG, "onUpdateExtractedText mExtractEditText.getText(): "+mExtractEditText.getText());
     }
     
     /**
