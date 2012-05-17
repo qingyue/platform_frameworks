@@ -563,6 +563,29 @@ public class InputMethodService extends AbstractInputMethodService {
         mWindow = new SoftInputWindow(this, mTheme, mDispatcherState);
         initViews();
         mWindow.getWindow().setLayout(MATCH_PARENT, WRAP_CONTENT);
+
+        mExtractEditText.addTextChangedListener(new TextWatcher() {
+			
+	    	@Override
+    		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			    // TODO Auto-generated method stub
+			    Log.i(TAG, "onTextChanged CharSequence: "+s.toString());
+		    }
+			
+		    @Override
+	    	public void beforeTextChanged(CharSequence s, int start, int count,
+			    	int after) {
+			    // TODO Auto-generated method stub
+			    Log.i(TAG, "beforeTextChanged CharSequence: "+s.toString());
+		    }
+		
+		    @Override
+	    	public void afterTextChanged(Editable s) {
+			    // TODO Auto-generated method stub
+		    	Log.i(TAG, "afterTextChanged CharSequence: "+s.toString());
+	    	}
+	    });
+
     }
     
     /**
@@ -1086,28 +1109,7 @@ public class InputMethodService extends AbstractInputMethodService {
         }
     }
    
-    mExtractEditText.addTextChangedListener(new TextWatcher() {
-			
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			// TODO Auto-generated method stub
-			Log.i(TAG, "onTextChanged CharSequence: "+s.toString());
-		}
-			
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
-			// TODO Auto-generated method stub
-			Log.i(TAG, "beforeTextChanged CharSequence: "+s.toString());
-		}
-		
-		@Override
-		public void afterTextChanged(Editable s) {
-			// TODO Auto-generated method stub
-			Log.i(TAG, "afterTextChanged CharSequence: "+s.toString());
-		}
-	});
-
+   
     /**
      * Replaces the current candidates view with a new one.  You only need to
      * call this when dynamically changing the view; normally, you should
