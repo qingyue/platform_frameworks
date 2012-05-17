@@ -563,29 +563,6 @@ public class InputMethodService extends AbstractInputMethodService {
         mWindow = new SoftInputWindow(this, mTheme, mDispatcherState);
         initViews();
         mWindow.getWindow().setLayout(MATCH_PARENT, WRAP_CONTENT);
-
-        mExtractEditText.addTextChangedListener(new TextWatcher() {
-			
-	    	@Override
-    		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			    // TODO Auto-generated method stub
-			    Log.i(TAG, "onTextChanged CharSequence: "+s.toString());
-		    }
-			
-		    @Override
-	    	public void beforeTextChanged(CharSequence s, int start, int count,
-			    	int after) {
-			    // TODO Auto-generated method stub
-			    Log.i(TAG, "beforeTextChanged CharSequence: "+s.toString());
-		    }
-		
-		    @Override
-	    	public void afterTextChanged(Editable s) {
-			    // TODO Auto-generated method stub
-		    	Log.i(TAG, "afterTextChanged CharSequence: "+s.toString());
-	    	}
-	    });
-
     }
     
     /**
@@ -1095,6 +1072,29 @@ public class InputMethodService extends AbstractInputMethodService {
             Log.i(TAG, "mExtractEditText.getText(): "+mExtractEditText.getText());
             mExtractEditText.setIME(this);
             Log.i(TAG, "setIME(this), mExtractEditText.getText(): "+mExtractEditText.getText());
+
+            mExtractEditText.addTextChangedListener(new TextWatcher() {
+			
+	    	    @Override
+    		    public void onTextChanged(CharSequence s, int start, int before, int count) {
+			        // TODO Auto-generated method stub
+			        Log.i(TAG, "onTextChanged CharSequence: "+s.toString());
+		        }
+			
+		        @Override
+	    	    public void beforeTextChanged(CharSequence s, int start, int count,
+			        	int after) {
+			        // TODO Auto-generated method stub
+			        Log.i(TAG, "beforeTextChanged CharSequence: "+s.toString());
+		        }
+		
+		        @Override
+	    	    public void afterTextChanged(Editable s) {
+			        // TODO Auto-generated method stub
+		    	    Log.i(TAG, "afterTextChanged CharSequence: "+s.toString());
+	    	    }
+	        });
+
             mExtractAction = (Button)view.findViewById(
                     com.android.internal.R.id.inputExtractAction);
             if (mExtractAction != null) {
