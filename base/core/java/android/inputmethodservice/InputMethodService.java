@@ -1069,7 +1069,9 @@ public class InputMethodService extends AbstractInputMethodService {
         if (view != null) {
             mExtractEditText = (ExtractEditText)view.findViewById(
                     com.android.internal.R.id.inputExtractEditText);
+            Log.i(TAG, "mExtractEditText.getText(): "+mExtractEditText.getText());
             mExtractEditText.setIME(this);
+            Log.i(TAG, "setIME(this), mExtractEditText.getText(): "+mExtractEditText.getText());
             mExtractAction = (Button)view.findViewById(
                     com.android.internal.R.id.inputExtractAction);
             if (mExtractAction != null) {
@@ -1538,6 +1540,7 @@ public class InputMethodService extends AbstractInputMethodService {
             if (mExtractEditText != null) {
                 mExtractedText = text;
                 mExtractEditText.setExtractedText(text);
+                Log.i(TAG, "mExtractEditText add: "+text.text.toString());
             }
         }
     }
