@@ -2064,6 +2064,8 @@ public class InputMethodService extends AbstractInputMethodService {
     
     void startExtractingText(boolean inputChanged) {
         final ExtractEditText eet = mExtractEditText;
+        Log.i(TAG, "getCurrentInputStarted: "+getCurrentInputStarted()+", isFullscreenMode(): "+isFullscreenMode());
+        Log.i(TAG, "eet != null? "+(eet != null));
         if (eet != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
             mExtractedToken++;
@@ -2094,6 +2096,7 @@ public class InputMethodService extends AbstractInputMethodService {
                 }
                 eet.setInputType(inputType);
                 eet.setHint(ei.hintText);
+                Log.i(TAG, "mExtractedText == null? "+(mExtractedText != null));
                 if (mExtractedText != null) {
                     eet.setEnabled(true);
                     eet.setExtractedText(mExtractedText);
