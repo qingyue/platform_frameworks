@@ -2194,7 +2194,12 @@ public class InputMethodService extends AbstractInputMethodService {
         mExtractedText = ic == null? null
                  : ic.getExtractedText(req, InputConnection.GET_EXTRACTED_TEXT_MONITOR);
 
-        Log.i(TAG, "getOnyxExtractedText: "+mExtractedText.text);
+        if (mExtractedText != null) {
+            Log.i(TAG, "getOnyxExtractedText: "+mExtractedText.text);
+        } else {
+            Log.i(TAG, "getOnyxExtractedText: "+"null");
+        }
+
 
         return mExtractedText;
     }
