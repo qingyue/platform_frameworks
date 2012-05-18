@@ -2172,6 +2172,30 @@ public class InputMethodService extends AbstractInputMethodService {
     }
 
     public ExtractedText getOnyxExtractedText() {
+        final ExtractEditText eet = mExtractEditText;
+        if (eet != null && getCurrentInputStarted()
+                && isFullscreenMode()) {
+            return null;
+        }
+
+        View view = mInflater.inflate(
+                        com.android.internal.R.layout.input_method_extract_view, null);
+        mExtractEditText = (ExtractEditText)view.findViewById(
+                                com.android.internal.R.id.inputExtractEditText);
+        mExtractEditText.setIME(this);
+
+        mExtractedToken++;
+        ExtractedTextRequest req = new ExtractedTextRequest();
+        req.token = mExtractedToken;
+        req.flags = InputConnection.GET_TEXT_WITH_STYLES;
+        req.hintMaxLines = 10;
+        req.hintMaxChars = 10000;
+        InputConnection ic = getCurrentInputConnection();
+        mExtractedText = ic == null? null
+                 : ic.getExtractedText(req, InputConnection.GET_EXTRACTED_TEXT_MONITOR);
+
+        Log.i(TAG, "getOnyxExtractedText: "+mExtractedText);
+
         return mExtractedText;
     }
 }
