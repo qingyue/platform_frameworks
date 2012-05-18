@@ -2168,7 +2168,7 @@ public class InputMethodService extends AbstractInputMethodService {
                 + " touchableInsets=" + mTmpInsets.touchableInsets);
     }
 
-    public ExtractedText getExtractedText() {
+    public ExtractedText getOnyxExtractedText() {
         return mExtractedText;
     }
 }
