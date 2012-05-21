@@ -2184,9 +2184,10 @@ public class InputMethodService extends AbstractInputMethodService {
                                 com.android.internal.R.id.inputExtractEditText);
         mExtractEditText.setIME(this);
 
-        mExtractedToken++;
+        int token = mExtractedToken;
+        token++;
         ExtractedTextRequest req = new ExtractedTextRequest();
-        req.token = mExtractedToken;
+        req.token = token;
         req.flags = InputConnection.GET_TEXT_WITH_STYLES;
         req.hintMaxLines = 10;
         req.hintMaxChars = 10000;
@@ -2200,6 +2201,39 @@ public class InputMethodService extends AbstractInputMethodService {
             Log.i(TAG, "getOnyxExtractedText: "+"null");
         }
 
+        final EditorInfo ei = getCurrentInputEditorInfo();
+
+        Log.i(TAG, "ei: "+ei);
+
+        try {
+            eet.startInternalChanges();
+            onUpdateExtractingVisibility(ei);
+            onUpdateExtractingViews(ei);
+            int inputType = ei.inputType;
+            if ((inputType&EditorInfo.TYPE_MASK_CLASS)
+                    == EditorInfo.TYPE_CLASS_TEXT) {
+                if ((inputType&EditorInfo.TYPE_TEXT_FLAG_IME_MULTI_LINE) != 0) {
+                    inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+                }
+            }
+            eet.setInputType(inputType);
+            eet.setHint(ei.hintText);
+            Log.i(TAG, "mExtractedText == null? "+(mExtractedText != null));
+            if (mExtractedText != null) {
+                eet.setEnabled(true);
+                eet.setExtractedText(mExtractedText);
+                Log.i(TAG, "mExtractedText.text: "+mExtractedText.text);
+            } else {
+                eet.setEnabled(false);
+                eet.setText("");
+            }
+        } finally {
+            eet.finishInternalChanges();
+        }
+
+        if (inputChanged) {
+            onExtractingInputChanged(ei);
+        }
 
         return mExtractedText;
     }
