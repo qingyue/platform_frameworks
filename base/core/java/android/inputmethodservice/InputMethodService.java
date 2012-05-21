@@ -2231,10 +2231,6 @@ public class InputMethodService extends AbstractInputMethodService {
             eet.finishInternalChanges();
         }
 
-        if (inputChanged) {
-            onExtractingInputChanged(ei);
-        }
-
         return mExtractedText;
     }
 }
