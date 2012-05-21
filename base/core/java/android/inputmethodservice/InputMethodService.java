@@ -239,7 +239,7 @@ public class InputMethodService extends AbstractInputMethodService {
     /**
      *{@hide}
      */
-    FrameLayout mContentFrame;
+    FrameLayout mOnyxContentFrame;
     
     IBinder mToken;
     
@@ -607,7 +607,7 @@ public class InputMethodService extends AbstractInputMethodService {
         mFullscreenApplied = false;
         
         mCandidatesFrame = (FrameLayout)mRootView.findViewById(android.R.id.candidatesArea);
-        mContentFrame = (FrameLayout)mRootView.findViewById(com.android.internal.R.id.contentArea);
+        mOnyxContentFrame = (FrameLayout)mRootView.findViewById(com.android.internal.R.id.contentArea);
         mInputFrame = (FrameLayout)mRootView.findViewById(android.R.id.inputArea);
         mInputView = null;
         mIsInputViewShown = false;
@@ -1122,13 +1122,13 @@ public class InputMethodService extends AbstractInputMethodService {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
     
-    public void setContentFrameView(View view) {
-        if (mContentFrame.getVisibility() != View.VISIBLE) {
-			mContentFrame.setVisibility(View.VISIBLE);
+    public void setOnyxContentFrameView(View view) {
+        if (mOnyxContentFrame.getVisibility() != View.VISIBLE) {
+			mOnyxContentFrame.setVisibility(View.VISIBLE);
 	    }
 
-        mContentFrame.removeAllViews();
-        mContentFrame.addView(view, new FrameLayout.LayoutParams(
+        mOnyxContentFrame.removeAllViews();
+        mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
@@ -1545,7 +1545,6 @@ public class InputMethodService extends AbstractInputMethodService {
                 Log.i(TAG, "mExtractEditText add: "+text.text.toString());
             }
         }
-        Log.i(TAG, "onUpdateExtractedText mExtractEditText.getText(): "+mExtractEditText.getText());
     }
     
     /**
@@ -2171,9 +2170,17 @@ public class InputMethodService extends AbstractInputMethodService {
                 + " touchableInsets=" + mTmpInsets.touchableInsets);
     }
 
+    public void hideOnyxContentFrame() {
+        if (mOnyxContentFrame != null) {
+            mOnyxContentFrame.removeAllViews();
+            if (mOnyxContentFrame.getVisibility() != View.GONE) {
+			    mOnyxContentFrame.setVisibility(View.GONE);
+	        }
+        }
+    }
+
     public ExtractedText getOnyxExtractedText() {
-        final ExtractEditText eet = mExtractEditText;
-        if (eet != null && getCurrentInputStarted()
+        if (mExtractEditText != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
             return null;
         }
