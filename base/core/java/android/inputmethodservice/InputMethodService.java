@@ -2186,7 +2186,7 @@ public class InputMethodService extends AbstractInputMethodService {
         }
 
         int token = mExtractedToken;
-        //token++;
+        token++;
         ExtractedTextRequest req = new ExtractedTextRequest();
         req.token = token;
         req.flags = InputConnection.GET_TEXT_WITH_STYLES;
