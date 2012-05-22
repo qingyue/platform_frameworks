@@ -172,6 +172,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     static public final String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
     static public final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
 
+    //tell kernel which suspend mode go in.
+    static final String AUTO_SUSPEND = "1";//perpheral like sd card ,tp ,keyboard can wakeup device,include power key and usb.
+    static final String POWER_KEY_SUSPEND = "0";//power key and usb can wakeup devices.
+
     // Useful scan codes.
     private static final int SW_LID = 0x00;
     private static final int BTN_MOUSE = 0x110;
@@ -1927,10 +1931,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         result &= ~ACTION_PASS_TO_USER;                        
                     }
                 } else {
-                    writeContent("/sys/power/power_mode","1");
+                    writeContent("/sys/power/power_mode",AUTO_SUSPEND);
                     //Log.d(TAG, "##########result4 =" + result + "canceled =" + canceled + "mPowerKeyHandled =" + mPowerKeyHandled);
                     if (interceptPowerKeyUp(canceled)) {
-                        writeContent("/sys/power/power_mode","0");
+                        writeContent("/sys/power/power_mode",POWER_KEY_SUSPEND);
                         result = (result & ~ACTION_POKE_USER_ACTIVITY) | ACTION_GO_TO_SLEEP;
                     }
                 }
