@@ -56,6 +56,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -234,6 +236,10 @@ public class InputMethodService extends AbstractInputMethodService {
     FrameLayout mExtractFrame;
     FrameLayout mCandidatesFrame;
     FrameLayout mInputFrame;
+    /**
+     *{@hide}
+     */
+    FrameLayout mOnyxContentFrame;
     
     IBinder mToken;
     
@@ -601,6 +607,7 @@ public class InputMethodService extends AbstractInputMethodService {
         mFullscreenApplied = false;
         
         mCandidatesFrame = (FrameLayout)mRootView.findViewById(android.R.id.candidatesArea);
+        mOnyxContentFrame = (FrameLayout)mRootView.findViewById(com.android.internal.R.id.contentArea);
         mInputFrame = (FrameLayout)mRootView.findViewById(android.R.id.inputArea);
         mInputView = null;
         mIsInputViewShown = false;
@@ -1063,6 +1070,30 @@ public class InputMethodService extends AbstractInputMethodService {
             mExtractEditText = (ExtractEditText)view.findViewById(
                     com.android.internal.R.id.inputExtractEditText);
             mExtractEditText.setIME(this);
+            Log.i(TAG, "setIME(this), mExtractEditText.getText(): "+mExtractEditText.getText());
+
+            mExtractEditText.addTextChangedListener(new TextWatcher() {
+			
+	    	    @Override
+    		    public void onTextChanged(CharSequence s, int start, int before, int count) {
+			        // TODO Auto-generated method stub
+			        Log.i(TAG, "onTextChanged CharSequence: "+s.toString());
+		        }
+			
+		        @Override
+	    	    public void beforeTextChanged(CharSequence s, int start, int count,
+			        	int after) {
+			        // TODO Auto-generated method stub
+			        Log.i(TAG, "beforeTextChanged CharSequence: "+s.toString());
+		        }
+		
+		        @Override
+	    	    public void afterTextChanged(Editable s) {
+			        // TODO Auto-generated method stub
+		    	    Log.i(TAG, "afterTextChanged CharSequence: "+s.toString());
+	    	    }
+	        });
+
             mExtractAction = (Button)view.findViewById(
                     com.android.internal.R.id.inputExtractAction);
             if (mExtractAction != null) {
@@ -1076,7 +1107,8 @@ public class InputMethodService extends AbstractInputMethodService {
             mExtractAction = null;
         }
     }
-    
+   
+   
     /**
      * Replaces the current candidates view with a new one.  You only need to
      * call this when dynamically changing the view; normally, you should
@@ -1090,6 +1122,17 @@ public class InputMethodService extends AbstractInputMethodService {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
     
+    public void setOnyxContentFrameView(View view) {
+        if (mOnyxContentFrame.getVisibility() != View.VISIBLE) {
+			mOnyxContentFrame.setVisibility(View.VISIBLE);
+	    }
+
+        mOnyxContentFrame.removeAllViews();
+        mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
     /**
      * Replaces the current input view with a new one.  You only need to
      * call this when dynamically changing the view; normally, you should
@@ -1491,6 +1534,7 @@ public class InputMethodService extends AbstractInputMethodService {
      * method is running in fullscreen mode.
      */
     public void onUpdateExtractedText(int token, ExtractedText text) {
+        Log.i(TAG, "onUpdateExtractedText text: "+text.text);
         if (mExtractedToken != token) {
             return;
         }
@@ -1498,6 +1542,7 @@ public class InputMethodService extends AbstractInputMethodService {
             if (mExtractEditText != null) {
                 mExtractedText = text;
                 mExtractEditText.setExtractedText(text);
+                Log.i(TAG, "mExtractEditText add: "+text.text.toString());
             }
         }
     }
@@ -2018,6 +2063,8 @@ public class InputMethodService extends AbstractInputMethodService {
     
     void startExtractingText(boolean inputChanged) {
         final ExtractEditText eet = mExtractEditText;
+        Log.i(TAG, "getCurrentInputStarted: "+getCurrentInputStarted()+", isFullscreenMode(): "+isFullscreenMode());
+        Log.i(TAG, "eet != null? "+(eet != null));
         if (eet != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
             mExtractedToken++;
@@ -2048,9 +2095,11 @@ public class InputMethodService extends AbstractInputMethodService {
                 }
                 eet.setInputType(inputType);
                 eet.setHint(ei.hintText);
+                Log.i(TAG, "mExtractedText == null? "+(mExtractedText != null));
                 if (mExtractedText != null) {
                     eet.setEnabled(true);
                     eet.setExtractedText(mExtractedText);
+                    Log.i(TAG, "mExtractedText.text: "+mExtractedText.text);
                 } else {
                     eet.setEnabled(false);
                     eet.setText("");
@@ -2119,5 +2168,40 @@ public class InputMethodService extends AbstractInputMethodService {
         p.println("  contentTopInsets=" + mTmpInsets.contentTopInsets
                 + " visibleTopInsets=" + mTmpInsets.visibleTopInsets
                 + " touchableInsets=" + mTmpInsets.touchableInsets);
+    }
+
+    public void hideOnyxContentFrame() {
+        if (mOnyxContentFrame != null) {
+            mOnyxContentFrame.removeAllViews();
+            if (mOnyxContentFrame.getVisibility() != View.GONE) {
+			    mOnyxContentFrame.setVisibility(View.GONE);
+	        }
+        }
+    }
+
+    public ExtractedText getOnyxExtractedText() {
+        if (mExtractEditText != null && getCurrentInputStarted()
+                && isFullscreenMode()) {
+            return null;
+        }
+
+        int token = mExtractedToken;
+        token++;
+        ExtractedTextRequest req = new ExtractedTextRequest();
+        req.token = token;
+        req.flags = InputConnection.GET_TEXT_WITH_STYLES;
+        req.hintMaxLines = 10;
+        req.hintMaxChars = 10000;
+        InputConnection ic = getCurrentInputConnection();
+        mExtractedText = ic == null? null
+                 : ic.getExtractedText(req, InputConnection.GET_EXTRACTED_TEXT_MONITOR);
+
+        if (mExtractedText != null) {
+            Log.i(TAG, "getOnyxExtractedText: "+mExtractedText.text);
+        } else {
+            Log.i(TAG, "getOnyxExtractedText: "+"null");
+        }
+
+        return mExtractedText;
     }
 }
