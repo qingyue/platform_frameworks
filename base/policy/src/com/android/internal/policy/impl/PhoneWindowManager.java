@@ -1736,14 +1736,22 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    public static void appendMethodB(String fileName, String content){ 
+    public static void writeContent(String fileName, String content){ 
+        FileWriter writer = null;
         try { 
-            FileWriter writer = new FileWriter(fileName); 
+            writer = new FileWriter(fileName); 
             writer.write(content); 
-            writer.close(); 
         } catch (IOException e) { 
             e.printStackTrace(); 
-        } 
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) { 
+                    e.printStackTrace(); 
+                } 
+            }
+        }
     }
  
     /** {@inheritDoc} */
@@ -1919,10 +1927,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         result &= ~ACTION_PASS_TO_USER;                        
                     }
                 } else {
-                    appendMethodB("/sys/power/power_mode","1");
+                    writeContent("/sys/power/power_mode","1");
                     //Log.d(TAG, "##########result4 =" + result + "canceled =" + canceled + "mPowerKeyHandled =" + mPowerKeyHandled);
                     if (interceptPowerKeyUp(canceled)) {
-                        appendMethodB("/sys/power/power_mode","0");
+                        writeContent("/sys/power/power_mode","0");
                         result = (result & ~ACTION_POKE_USER_ACTIVITY) | ACTION_GO_TO_SLEEP;
                     }
                 }
