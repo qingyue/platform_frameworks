@@ -280,7 +280,9 @@ public class InputMethodService extends AbstractInputMethodService {
     final ViewTreeObserver.OnComputeInternalInsetsListener mInsetsComputer =
             new ViewTreeObserver.OnComputeInternalInsetsListener() {
         public void onComputeInternalInsets(ViewTreeObserver.InternalInsetsInfo info) {
+            Log.i(TAG, "isExtractViewShown");
             if (isExtractViewShown()) {
+                Log.i(TAG, "isExtractViewShown: "+(isExtractViewShown());
                 // In true fullscreen mode, we just say the window isn't covering
                 // any content so we don't impact whatever is behind.
                 View decor = getWindow().getWindow().getDecorView();
@@ -288,6 +290,7 @@ public class InputMethodService extends AbstractInputMethodService {
                         = decor.getHeight();
                 info.setTouchableInsets(ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME);
             } else {
+                Log.i(TAG, "isExtractViewShown: "+(isExtractViewShown());
                 onComputeInsets(mTmpInsets);
                 info.contentInsets.top = mTmpInsets.contentTopInsets;
                 info.visibleInsets.top = mTmpInsets.visibleTopInsets;
@@ -2185,6 +2188,8 @@ public class InputMethodService extends AbstractInputMethodService {
             return null;
         }
 
+        onOnyxComputeInsets(mTmpInsets);
+
         int token = mExtractedToken;
         token++;
         ExtractedTextRequest req = new ExtractedTextRequest();
@@ -2220,5 +2225,20 @@ public class InputMethodService extends AbstractInputMethodService {
         }
 
         return ei;
+    }
+
+    public void onOnyxComputeInsets(Insets outInsets) {
+        int[] loc = mTmpLocation;
+        if (mInputFrame.getVisibility() == View.VISIBLE) {
+            mInputFrame.getLocationInWindow(loc);
+        } else {
+            View decor = getWindow().getWindow().getDecorView();
+            loc[1] = decor.getHeight();
+        }
+
+        outInsets.contentTopInsets = loc[1];
+        mOnyxContentFrame.getLocationInWindow(loc);
+        outInsets.visibleTopInsets = loc[1];
+        outInsets.touchableInsets = Insets.TOUCHABLE_INSETS_VISIBLE;
     }
 }
