@@ -2204,4 +2204,21 @@ public class InputMethodService extends AbstractInputMethodService {
 
         return mExtractedText;
     }
+
+    public EditorInfo getOnyxEditorInfo() {
+        final EditorInfo ei = getCurrentInputEditorInfo();
+
+        if (ei != null) {
+            int inputType = ei.inputType;
+            if ((inputType&EditorInfo.TYPE_MASK_CLASS)
+                    == EditorInfo.TYPE_CLASS_TEXT) {
+                if ((inputType&EditorInfo.TYPE_TEXT_FLAG_IME_MULTI_LINE) != 0) {
+                    inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+                }
+            }
+            ei.inputType = inputType;
+        }
+
+        return ei;
+    }
 }
