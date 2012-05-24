@@ -280,9 +280,7 @@ public class InputMethodService extends AbstractInputMethodService {
     final ViewTreeObserver.OnComputeInternalInsetsListener mInsetsComputer =
             new ViewTreeObserver.OnComputeInternalInsetsListener() {
         public void onComputeInternalInsets(ViewTreeObserver.InternalInsetsInfo info) {
-            Log.i(TAG, "isExtractViewShown");
             if (isExtractViewShown()) {
-                Log.i(TAG, "isExtractViewShown: "+isExtractViewShown());
                 // In true fullscreen mode, we just say the window isn't covering
                 // any content so we don't impact whatever is behind.
                 View decor = getWindow().getWindow().getDecorView();
@@ -290,7 +288,6 @@ public class InputMethodService extends AbstractInputMethodService {
                         = decor.getHeight();
                 info.setTouchableInsets(ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME);
             } else {
-                Log.i(TAG, "isExtractViewShown: "+isExtractViewShown());
                 onComputeInsets(mTmpInsets);
                 info.contentInsets.top = mTmpInsets.contentTopInsets;
                 info.visibleInsets.top = mTmpInsets.visibleTopInsets;
@@ -1073,29 +1070,6 @@ public class InputMethodService extends AbstractInputMethodService {
             mExtractEditText = (ExtractEditText)view.findViewById(
                     com.android.internal.R.id.inputExtractEditText);
             mExtractEditText.setIME(this);
-            Log.i(TAG, "setIME(this), mExtractEditText.getText(): "+mExtractEditText.getText());
-
-            mExtractEditText.addTextChangedListener(new TextWatcher() {
-			
-	    	    @Override
-    		    public void onTextChanged(CharSequence s, int start, int before, int count) {
-			        // TODO Auto-generated method stub
-			        Log.i(TAG, "onTextChanged CharSequence: "+s.toString());
-		        }
-			
-		        @Override
-	    	    public void beforeTextChanged(CharSequence s, int start, int count,
-			        	int after) {
-			        // TODO Auto-generated method stub
-			        Log.i(TAG, "beforeTextChanged CharSequence: "+s.toString());
-		        }
-		
-		        @Override
-	    	    public void afterTextChanged(Editable s) {
-			        // TODO Auto-generated method stub
-		    	    Log.i(TAG, "afterTextChanged CharSequence: "+s.toString());
-	    	    }
-	        });
 
             mExtractAction = (Button)view.findViewById(
                     com.android.internal.R.id.inputExtractAction);
@@ -1537,7 +1511,6 @@ public class InputMethodService extends AbstractInputMethodService {
      * method is running in fullscreen mode.
      */
     public void onUpdateExtractedText(int token, ExtractedText text) {
-        Log.i(TAG, "onUpdateExtractedText text: "+text.text);
         if (mExtractedToken != token) {
             return;
         }
@@ -1545,7 +1518,6 @@ public class InputMethodService extends AbstractInputMethodService {
             if (mExtractEditText != null) {
                 mExtractedText = text;
                 mExtractEditText.setExtractedText(text);
-                Log.i(TAG, "mExtractEditText add: "+text.text.toString());
             }
         }
     }
@@ -1757,17 +1729,20 @@ public class InputMethodService extends AbstractInputMethodService {
                 // We want our own movement method to handle the key, so the
                 // cursor will properly move in our own word wrapping.
                 if (count == MOVEMENT_DOWN) {
+                    Log.i(TAG, "===(count == MOVEMENT_DOWN)===");
                     if (movement.onKeyDown(eet,
                             (Spannable)eet.getText(), keyCode, event)) {
                         reportExtractedMovement(keyCode, 1);
                         return true;
                     }
                 } else if (count == MOVEMENT_UP) {
+                    Log.i(TAG, "===(count == MOVEMENT_UP)===");
                     if (movement.onKeyUp(eet,
                             (Spannable)eet.getText(), keyCode, event)) {
                         return true;
                     }
                 } else {
+                    Log.i(TAG, "===else===");
                     if (movement.onKeyOther(eet, (Spannable)eet.getText(), event)) {
                         reportExtractedMovement(keyCode, count);
                     } else {
@@ -2066,8 +2041,6 @@ public class InputMethodService extends AbstractInputMethodService {
     
     void startExtractingText(boolean inputChanged) {
         final ExtractEditText eet = mExtractEditText;
-        Log.i(TAG, "getCurrentInputStarted: "+getCurrentInputStarted()+", isFullscreenMode(): "+isFullscreenMode());
-        Log.i(TAG, "eet != null? "+(eet != null));
         if (eet != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
             mExtractedToken++;
@@ -2098,11 +2071,9 @@ public class InputMethodService extends AbstractInputMethodService {
                 }
                 eet.setInputType(inputType);
                 eet.setHint(ei.hintText);
-                Log.i(TAG, "mExtractedText == null? "+(mExtractedText != null));
                 if (mExtractedText != null) {
                     eet.setEnabled(true);
                     eet.setExtractedText(mExtractedText);
-                    Log.i(TAG, "mExtractedText.text: "+mExtractedText.text);
                 } else {
                     eet.setEnabled(false);
                     eet.setText("");
@@ -2188,8 +2159,6 @@ public class InputMethodService extends AbstractInputMethodService {
             return null;
         }
 
-        onOnyxComputeInsets(mTmpInsets);
-
         int token = mExtractedToken;
         token++;
         ExtractedTextRequest req = new ExtractedTextRequest();
@@ -2200,12 +2169,6 @@ public class InputMethodService extends AbstractInputMethodService {
         InputConnection ic = getCurrentInputConnection();
         mExtractedText = ic == null? null
                  : ic.getExtractedText(req, InputConnection.GET_EXTRACTED_TEXT_MONITOR);
-
-        if (mExtractedText != null) {
-            Log.i(TAG, "getOnyxExtractedText: "+mExtractedText.text);
-        } else {
-            Log.i(TAG, "getOnyxExtractedText: "+"null");
-        }
 
         return mExtractedText;
     }
@@ -2225,20 +2188,5 @@ public class InputMethodService extends AbstractInputMethodService {
         }
 
         return ei;
-    }
-
-    public void onOnyxComputeInsets(Insets outInsets) {
-        int[] loc = mTmpLocation;
-        if (mInputFrame.getVisibility() == View.VISIBLE) {
-            mInputFrame.getLocationInWindow(loc);
-        } else {
-            View decor = getWindow().getWindow().getDecorView();
-            loc[1] = decor.getHeight();
-        }
-
-        outInsets.contentTopInsets = loc[1];
-        mOnyxContentFrame.getLocationInWindow(loc);
-        outInsets.visibleTopInsets = loc[1];
-        outInsets.touchableInsets = Insets.TOUCHABLE_INSETS_VISIBLE;
     }
 }
