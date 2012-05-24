@@ -282,7 +282,7 @@ public class InputMethodService extends AbstractInputMethodService {
         public void onComputeInternalInsets(ViewTreeObserver.InternalInsetsInfo info) {
             Log.i(TAG, "isExtractViewShown");
             if (isExtractViewShown()) {
-                Log.i(TAG, "isExtractViewShown: "+(isExtractViewShown());
+                Log.i(TAG, "isExtractViewShown: "+isExtractViewShown());
                 // In true fullscreen mode, we just say the window isn't covering
                 // any content so we don't impact whatever is behind.
                 View decor = getWindow().getWindow().getDecorView();
@@ -290,7 +290,7 @@ public class InputMethodService extends AbstractInputMethodService {
                         = decor.getHeight();
                 info.setTouchableInsets(ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME);
             } else {
-                Log.i(TAG, "isExtractViewShown: "+(isExtractViewShown());
+                Log.i(TAG, "isExtractViewShown: "+isExtractViewShown());
                 onComputeInsets(mTmpInsets);
                 info.contentInsets.top = mTmpInsets.contentTopInsets;
                 info.visibleInsets.top = mTmpInsets.visibleTopInsets;
