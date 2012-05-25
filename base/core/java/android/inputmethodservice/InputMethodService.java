@@ -1563,19 +1563,19 @@ public class InputMethodService extends AbstractInputMethodService {
             else if (newSelEnd > len) newSelEnd = len;
             eet.setSelection(newSelStart, newSelEnd);
             eet.finishInternalChanges();
-        } else if (eet != null && !isFullscreenMode()) {
+        } else if (mExtractEditText != null && !isFullscreenMode()) {
             Log.i(TAG, "(eet != null && !isFullscreenMode())");
             final int off = mExtractedText.startOffset;
-            eet.startInternalChanges();
+            mExtractEditText.startInternalChanges();
             newSelStart -= off;
             newSelEnd -= off;
-            final int len = eet.getText().length();
+            final int len = mExtractEditText.getText().length();
             if (newSelStart < 0) newSelStart = 0;
             else if (newSelStart > len) newSelStart = len;
             if (newSelEnd < 0) newSelEnd = 0;
             else if (newSelEnd > len) newSelEnd = len;
-            eet.setSelection(newSelStart, newSelEnd);
-            eet.finishInternalChanges();
+            mExtractEditText.setSelection(newSelStart, newSelEnd);
+            mExtractEditText.finishInternalChanges();
         }
     }
 
@@ -1802,35 +1802,34 @@ public class InputMethodService extends AbstractInputMethodService {
             }
         } else if (eet != null && !isFullscreenMode()) {
             Log.i(TAG, "(eet != null && !isFullscreenMode())");
-            MovementMethod movement = eet.getMovementMethod();
-            Layout layout = eet.getLayout();
-            if (movement != null && layout != null) {
+            MovementMethod movement = mExtractEditText.getMovementMethod();
+            if (movement != null) {
                 if (count == MOVEMENT_DOWN) {
-                    if (movement.onKeyDown(eet,
-                            (Spannable)eet.getText(), keyCode, event)) {
+                    if (movement.onKeyDown(mExtractEditText,
+                            (Spannable)mExtractEditText.getText(), keyCode, event)) {
                         reportExtractedMovement(keyCode, 1);
                         return true;
                     }
                 } else if (count == MOVEMENT_UP) {
-                    if (movement.onKeyUp(eet,
-                            (Spannable)eet.getText(), keyCode, event)) {
+                    if (movement.onKeyUp(mExtractEditText,
+                            (Spannable)mExtractEditText.getText(), keyCode, event)) {
                         return true;
                     }
                 } else {
-                    if (movement.onKeyOther(eet, (Spannable)eet.getText(), event)) {
+                    if (movement.onKeyOther(mExtractEditText, (Spannable)mExtractEditText.getText(), event)) {
                         reportExtractedMovement(keyCode, count);
                     } else {
                         KeyEvent down = KeyEvent.changeAction(event, KeyEvent.ACTION_DOWN);
-                        if (movement.onKeyDown(eet,
-                                (Spannable)eet.getText(), keyCode, down)) {
+                        if (movement.onKeyDown(mExtractEditText,
+                                (Spannable)mExtractEditText.getText(), keyCode, down)) {
                             KeyEvent up = KeyEvent.changeAction(event, KeyEvent.ACTION_UP);
-                            movement.onKeyUp(eet,
-                                    (Spannable)eet.getText(), keyCode, up);
+                            movement.onKeyUp(mExtractEditText,
+                                    (Spannable)mExtractEditText.getText(), keyCode, up);
                             while (--count > 0) {
-                                movement.onKeyDown(eet,
-                                        (Spannable)eet.getText(), keyCode, down);
-                                movement.onKeyUp(eet,
-                                        (Spannable)eet.getText(), keyCode, up);
+                                movement.onKeyDown(mExtractEditText,
+                                        (Spannable)mExtractEditText.getText(), keyCode, down);
+                                movement.onKeyUp(mExtractEditText,
+                                        (Spannable)mExtractEditText.getText(), keyCode, up);
                             }
                             reportExtractedMovement(keyCode, count);
                         }
@@ -2163,7 +2162,7 @@ public class InputMethodService extends AbstractInputMethodService {
             if (inputChanged) {
                 onExtractingInputChanged(ei);
             }
-        } else if (eet != null && !isFullscreenMode()) {
+        } else if (mExtractEditText != null && !isFullscreenMode()) {
             Log.i(TAG, "else ===startExtractingText===");
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
@@ -2178,7 +2177,7 @@ public class InputMethodService extends AbstractInputMethodService {
             final EditorInfo ei = getCurrentInputEditorInfo();
             
             try {
-                eet.startInternalChanges();
+                mExtractEditText.startInternalChanges();
                 onUpdateExtractingViews(ei);
                 int inputType = ei.inputType;
                 if ((inputType&EditorInfo.TYPE_MASK_CLASS)
@@ -2187,17 +2186,17 @@ public class InputMethodService extends AbstractInputMethodService {
                         inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
                     }
                 }
-                eet.setInputType(inputType);
-                eet.setHint(ei.hintText);
+                mExtractEditText.setInputType(inputType);
+                mExtractEditText.setHint(ei.hintText);
                 if (mExtractedText != null) {
-                    eet.setEnabled(true);
-                    eet.setExtractedText(mExtractedText);
+                    mExtractEditText.setEnabled(true);
+                    mExtractEditText.setExtractedText(mExtractedText);
                 } else {
-                    eet.setEnabled(false);
-                    eet.setText("");
+                    mExtractEditText.setEnabled(false);
+                    mExtractEditText.setText("");
                 }
             } finally {
-                eet.finishInternalChanges();
+                mExtractEditText.finishInternalChanges();
             }
             
             if (inputChanged) {
