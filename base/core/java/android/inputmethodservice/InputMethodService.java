@@ -1061,12 +1061,14 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setExtractView(View view) {
+        Log.i(TAG, "===setExtractView===");
         mExtractFrame.removeAllViews();
         mExtractFrame.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         mExtractView = view;
         if (view != null) {
+            Log.i(TAG, "view != null");
             mExtractEditText = (ExtractEditText)view.findViewById(
                     com.android.internal.R.id.inputExtractEditText);
             mExtractEditText.setIME(this);
@@ -1105,7 +1107,16 @@ public class InputMethodService extends AbstractInputMethodService {
 	    }
 
         mOnyxContentFrame.removeAllViews();
-        mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
+        //mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
+        //        ViewGroup.LayoutParams.MATCH_PARENT,
+        //        ViewGroup.LayoutParams.WRAP_CONTENT));
+
+
+        View myView = onCreateExtractTextView();
+		setExtractView(myView);
+        
+        Log.i(TAG, "mExtractEditText: "+mExtractEditText);
+        mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
@@ -1547,6 +1558,18 @@ public class InputMethodService extends AbstractInputMethodService {
             else if (newSelEnd > len) newSelEnd = len;
             eet.setSelection(newSelStart, newSelEnd);
             eet.finishInternalChanges();
+        } else if (eet != null && !isFullscreenMode()) {
+            final int off = mExtractedText.startOffset;
+            eet.startInternalChanges();
+            newSelStart -= off;
+            newSelEnd -= off;
+            final int len = eet.getText().length();
+            if (newSelStart < 0) newSelStart = 0;
+            else if (newSelStart > len) newSelStart = len;
+            if (newSelEnd < 0) newSelEnd = 0;
+            else if (newSelEnd > len) newSelEnd = len;
+            eet.setSelection(newSelStart, newSelEnd);
+            eet.finishInternalChanges();
         }
     }
 
@@ -1729,20 +1752,17 @@ public class InputMethodService extends AbstractInputMethodService {
                 // We want our own movement method to handle the key, so the
                 // cursor will properly move in our own word wrapping.
                 if (count == MOVEMENT_DOWN) {
-                    Log.i(TAG, "===(count == MOVEMENT_DOWN)===");
                     if (movement.onKeyDown(eet,
                             (Spannable)eet.getText(), keyCode, event)) {
                         reportExtractedMovement(keyCode, 1);
                         return true;
                     }
                 } else if (count == MOVEMENT_UP) {
-                    Log.i(TAG, "===(count == MOVEMENT_UP)===");
                     if (movement.onKeyUp(eet,
                             (Spannable)eet.getText(), keyCode, event)) {
                         return true;
                     }
                 } else {
-                    Log.i(TAG, "===else===");
                     if (movement.onKeyOther(eet, (Spannable)eet.getText(), event)) {
                         reportExtractedMovement(keyCode, count);
                     } else {
@@ -1765,6 +1785,49 @@ public class InputMethodService extends AbstractInputMethodService {
             }
             // Regardless of whether the movement method handled the key,
             // we never allow DPAD navigation to the application.
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                case KeyEvent.KEYCODE_DPAD_UP:
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    return true;
+            }
+        } else if (eet != null && !isFullscreenMode()) {
+            MovementMethod movement = eet.getMovementMethod();
+            Layout layout = eet.getLayout();
+            if (movement != null && layout != null) {
+                if (count == MOVEMENT_DOWN) {
+                    if (movement.onKeyDown(eet,
+                            (Spannable)eet.getText(), keyCode, event)) {
+                        reportExtractedMovement(keyCode, 1);
+                        return true;
+                    }
+                } else if (count == MOVEMENT_UP) {
+                    if (movement.onKeyUp(eet,
+                            (Spannable)eet.getText(), keyCode, event)) {
+                        return true;
+                    }
+                } else {
+                    if (movement.onKeyOther(eet, (Spannable)eet.getText(), event)) {
+                        reportExtractedMovement(keyCode, count);
+                    } else {
+                        KeyEvent down = KeyEvent.changeAction(event, KeyEvent.ACTION_DOWN);
+                        if (movement.onKeyDown(eet,
+                                (Spannable)eet.getText(), keyCode, down)) {
+                            KeyEvent up = KeyEvent.changeAction(event, KeyEvent.ACTION_UP);
+                            movement.onKeyUp(eet,
+                                    (Spannable)eet.getText(), keyCode, up);
+                            while (--count > 0) {
+                                movement.onKeyDown(eet,
+                                        (Spannable)eet.getText(), keyCode, down);
+                                movement.onKeyUp(eet,
+                                        (Spannable)eet.getText(), keyCode, up);
+                            }
+                            reportExtractedMovement(keyCode, count);
+                        }
+                    }
+                }
+            }
             switch (keyCode) {
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -2040,9 +2103,11 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     void startExtractingText(boolean inputChanged) {
+        Log.i(TAG, "===startExtractingText===");
         final ExtractEditText eet = mExtractEditText;
         if (eet != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
+            Log.i(TAG, "isFullscreenMode: "+isFullscreenMode());
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
@@ -2061,6 +2126,46 @@ public class InputMethodService extends AbstractInputMethodService {
             try {
                 eet.startInternalChanges();
                 onUpdateExtractingVisibility(ei);
+                onUpdateExtractingViews(ei);
+                int inputType = ei.inputType;
+                if ((inputType&EditorInfo.TYPE_MASK_CLASS)
+                        == EditorInfo.TYPE_CLASS_TEXT) {
+                    if ((inputType&EditorInfo.TYPE_TEXT_FLAG_IME_MULTI_LINE) != 0) {
+                        inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+                    }
+                }
+                eet.setInputType(inputType);
+                eet.setHint(ei.hintText);
+                if (mExtractedText != null) {
+                    eet.setEnabled(true);
+                    eet.setExtractedText(mExtractedText);
+                } else {
+                    eet.setEnabled(false);
+                    eet.setText("");
+                }
+            } finally {
+                eet.finishInternalChanges();
+            }
+            
+            if (inputChanged) {
+                onExtractingInputChanged(ei);
+            }
+        } else if (eet != null && !isFullscreenMode()) {
+            Log.i(TAG, "else ===startExtractingText===");
+            mExtractedToken++;
+            ExtractedTextRequest req = new ExtractedTextRequest();
+            req.token = mExtractedToken;
+            req.flags = InputConnection.GET_TEXT_WITH_STYLES;
+            req.hintMaxLines = 10;
+            req.hintMaxChars = 10000;
+            InputConnection ic = getCurrentInputConnection();
+            mExtractedText = ic == null? null
+                    : ic.getExtractedText(req, InputConnection.GET_EXTRACTED_TEXT_MONITOR);
+
+            final EditorInfo ei = getCurrentInputEditorInfo();
+            
+            try {
+                eet.startInternalChanges();
                 onUpdateExtractingViews(ei);
                 int inputType = ei.inputType;
                 if ((inputType&EditorInfo.TYPE_MASK_CLASS)
