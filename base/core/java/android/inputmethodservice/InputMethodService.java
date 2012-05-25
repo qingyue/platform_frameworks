@@ -1112,8 +1112,9 @@ public class InputMethodService extends AbstractInputMethodService {
         //        ViewGroup.LayoutParams.WRAP_CONTENT));
 
 
-        View myView = onCreateExtractTextView();
-		setExtractView(myView);
+        View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
+        mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
+        mExtractEditText.setIME(this);
         
         Log.i(TAG, "mExtractEditText: "+mExtractEditText);
         mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(

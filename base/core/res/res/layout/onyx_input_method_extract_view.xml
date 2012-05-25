@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.inputmethodservice.ExtractEditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/onyxInputExtractEditText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:drawable/extract_edit_text"
+    android:gravity="top"
+    android:inputType="text"
+    android:minLines="1"
+    android:scrollbars="vertical" >
+
+</android.inputmethodservice.ExtractEditText>
