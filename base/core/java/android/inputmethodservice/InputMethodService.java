@@ -2301,7 +2301,7 @@ public class InputMethodService extends AbstractInputMethodService {
         }
     }
 
-    /*public ExtractedText getOnyxExtractedText() {
+    public ExtractedText getOnyxExtractedText() {
         if (mExtractEditText != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
             return null;
@@ -2336,5 +2336,5 @@ public class InputMethodService extends AbstractInputMethodService {
         }
 
         return ei;
-    }*/
+    }
 }
