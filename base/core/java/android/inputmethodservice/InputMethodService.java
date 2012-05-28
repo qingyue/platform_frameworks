@@ -1061,14 +1061,12 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setExtractView(View view) {
-        Log.i(TAG, "===setExtractView===");
         mExtractFrame.removeAllViews();
         mExtractFrame.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         mExtractView = view;
         if (view != null) {
-            Log.i(TAG, "view != null");
             mExtractEditText = (ExtractEditText)view.findViewById(
                     com.android.internal.R.id.inputExtractEditText);
             mExtractEditText.setIME(this);
@@ -1102,9 +1100,7 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setOnyxContentFrameView(View view) {
-        Log.i(TAG, "setOnyxContentFrameView mWindowVisible: "+mWindowVisible);
         if (mWindowVisible) {
-            Log.i(TAG, "IME is show");
             return;
         }
 
@@ -1117,39 +1113,12 @@ public class InputMethodService extends AbstractInputMethodService {
                 mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
                 mExtractEditText.setIME(this);
                 startExtractingText(false);
-                Log.i(TAG, "mExtractEditText : "+mExtractEditText);
                 mOnyxContentFrame.removeAllViews();
                 mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         }
-
-        //View onyxView = onCreateExtractTextView();
-        //Log.i(TAG, "onyxView: "+onyxView);
-        //if (onyxView != null) {
-        //    mOnyxContentFrame.addView(onyxView, new FrameLayout.LayoutParams(
-        //            ViewGroup.LayoutParams.MATCH_PARENT,
-        //            ViewGroup.LayoutParams.MATCH_PARENT));
-        //
-        //    mExtractEditText = (ExtractEditText)onyxView.findViewById(
-        //            com.android.internal.R.id.inputExtractEditText);
-        //    mExtractEditText.setIME(this);
-        //}
-        
-        /*if (view != null) {
-            Log.i(TAG, "===setOnyxContentFrameView===");
-            if (mOnyxContentFrame != null) {
-                if (mOnyxContentFrame.getVisibility() != View.VISIBLE) {
-		            mOnyxContentFrame.setVisibility(View.VISIBLE);
-	            }
-
-                Log.i(TAG, "===mOnyxContentFrame.addView===");
-                mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
-            }
-        }*/
     }
 
     /**
@@ -1553,7 +1522,6 @@ public class InputMethodService extends AbstractInputMethodService {
      * method is running in fullscreen mode.
      */
     public void onUpdateExtractedText(int token, ExtractedText text) {
-        Log.i(TAG, "===onUpdateExtractedText=== text: "+text.text);
         if (mExtractedToken != token) {
             return;
         }
@@ -1561,7 +1529,6 @@ public class InputMethodService extends AbstractInputMethodService {
             if (mExtractEditText != null) {
                 mExtractedText = text;
                 mExtractEditText.setExtractedText(text);
-                Log.i(TAG, "mExtractEditText.getText: "+mExtractEditText.getText()+", text: "+text.text);
             }
         }
     }
@@ -1578,10 +1545,8 @@ public class InputMethodService extends AbstractInputMethodService {
     public void onUpdateSelection(int oldSelStart, int oldSelEnd,
             int newSelStart, int newSelEnd,
             int candidatesStart, int candidatesEnd) {
-        Log.i(TAG, "===onUpdateSelection===");
         final ExtractEditText eet = mExtractEditText;
         if (eet != null && isFullscreenMode() && mExtractedText != null) {
-            Log.i(TAG, "(eet != null && isFullscreenMode() && mExtractedText != null)");
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
@@ -1594,7 +1559,6 @@ public class InputMethodService extends AbstractInputMethodService {
             eet.setSelection(newSelStart, newSelEnd);
             eet.finishInternalChanges();
         } else if (eet != null && !isFullscreenMode()) {
-            Log.i(TAG, "(eet != null && !isFullscreenMode())");
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
@@ -1777,10 +1741,8 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     boolean doMovementKey(int keyCode, KeyEvent event, int count) {
-        Log.i(TAG, "===doMovementKey===");
         final ExtractEditText eet = mExtractEditText;
         if (isExtractViewShown() && isInputViewShown() && eet != null) {
-            Log.i(TAG, "(isExtractViewShown() && isInputViewShown() && eet != null)");
             // If we are in fullscreen mode, the cursor will move around
             // the extract edit text, but should NOT cause focus to move
             // to other fields.
@@ -1831,10 +1793,8 @@ public class InputMethodService extends AbstractInputMethodService {
                     return true;
             }
         } else if (eet != null && !isFullscreenMode()) {
-            Log.i(TAG, "(eet != null && !isFullscreenMode())");
             MovementMethod movement = eet.getMovementMethod();
-            Layout layout = eet.getLayout();
-            if (movement != null && layout != null) {
+            if (movement != null) {
                 if (count == MOVEMENT_DOWN) {
                     if (movement.onKeyDown(eet,
                             (Spannable)eet.getText(), keyCode, event)) {
@@ -1991,12 +1951,10 @@ public class InputMethodService extends AbstractInputMethodService {
      * Re-implement this to provide whatever behavior you want.
      */
     public void onExtractedTextClicked() {
-        Log.i(TAG, "===onExtractedTextClicked===");
         if (mExtractEditText == null) {
             return;
         }
         if (mExtractEditText.hasVerticalScrollBar()) {
-            Log.i(TAG, "(mExtractEditText.hasVerticalScrollBar())");
             setCandidatesViewShown(false);
         }
     }
@@ -2012,12 +1970,10 @@ public class InputMethodService extends AbstractInputMethodService {
      * @param dy The amount of cursor movement in the y dimension.
      */
     public void onExtractedCursorMovement(int dx, int dy) {
-        Log.i(TAG, "===onExtractedCursorMovement===");
         if (mExtractEditText == null || dy == 0) {
             return;
         }
         if (mExtractEditText.hasVerticalScrollBar()) {
-            Log.i(TAG, "mExtractEditText.hasVerticalScrollBar()");
             setCandidatesViewShown(false);
         }
     }
@@ -2146,11 +2102,9 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     void startExtractingText(boolean inputChanged) {
-        Log.i(TAG, "===startExtractingText===");
         final ExtractEditText eet = mExtractEditText;
         if (eet != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
-            Log.i(TAG, "isFullscreenMode: "+isFullscreenMode());
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
@@ -2194,7 +2148,6 @@ public class InputMethodService extends AbstractInputMethodService {
                 onExtractingInputChanged(ei);
             }
         } else if (eet != null && !isFullscreenMode()) {
-            Log.i(TAG, "else ===startExtractingText===");
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
@@ -2299,42 +2252,5 @@ public class InputMethodService extends AbstractInputMethodService {
 			    mOnyxContentFrame.setVisibility(View.GONE);
 	        }
         }
-    }
-
-    public ExtractedText getOnyxExtractedText() {
-        if (mExtractEditText != null && getCurrentInputStarted()
-                && isFullscreenMode()) {
-            return null;
-        }
-
-        int token = mExtractedToken;
-        token++;
-        ExtractedTextRequest req = new ExtractedTextRequest();
-        req.token = token;
-        req.flags = InputConnection.GET_TEXT_WITH_STYLES;
-        req.hintMaxLines = 10;
-        req.hintMaxChars = 10000;
-        InputConnection ic = getCurrentInputConnection();
-        mExtractedText = ic == null? null
-                 : ic.getExtractedText(req, InputConnection.GET_EXTRACTED_TEXT_MONITOR);
-
-        return mExtractedText;
-    }
-
-    public EditorInfo getOnyxEditorInfo() {
-        final EditorInfo ei = getCurrentInputEditorInfo();
-
-        if (ei != null) {
-            int inputType = ei.inputType;
-            if ((inputType&EditorInfo.TYPE_MASK_CLASS)
-                    == EditorInfo.TYPE_CLASS_TEXT) {
-                if ((inputType&EditorInfo.TYPE_TEXT_FLAG_IME_MULTI_LINE) != 0) {
-                    inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
-                }
-            }
-            ei.inputType = inputType;
-        }
-
-        return ei;
     }
 }
