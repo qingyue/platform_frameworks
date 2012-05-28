@@ -1107,21 +1107,23 @@ public class InputMethodService extends AbstractInputMethodService {
             Log.i(TAG, "IME is show");
             return;
         }
-        //if (mOnyxContentFrame.getVisibility() != View.VISIBLE) {
-		//	mOnyxContentFrame.setVisibility(View.VISIBLE);
-	    //}
 
-        //View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
-        //if (onyxView != null) {
-        //    mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
-        //    mExtractEditText.setIME(this);
-        //    startExtractingText(false);
-        //    Log.i(TAG, "mExtractEditText : "+mExtractEditText);
-        //    mOnyxContentFrame.removeAllViews();
-        //    mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
-        //            ViewGroup.LayoutParams.MATCH_PARENT,
-        //            ViewGroup.LayoutParams.WRAP_CONTENT));
-        //}
+        View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
+        if (onyxView != null) {
+            if (mOnyxContentFrame.getVisibility() != View.VISIBLE) {
+			    mOnyxContentFrame.setVisibility(View.VISIBLE);
+	        }
+            if (mOnyxContentFrame != null) {
+                mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
+                mExtractEditText.setIME(this);
+                startExtractingText(false);
+                Log.i(TAG, "mExtractEditText : "+mExtractEditText);
+                mOnyxContentFrame.removeAllViews();
+                mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+        }
 
         //View onyxView = onCreateExtractTextView();
         //Log.i(TAG, "onyxView: "+onyxView);
@@ -1135,7 +1137,7 @@ public class InputMethodService extends AbstractInputMethodService {
         //    mExtractEditText.setIME(this);
         //}
         
-        if (view != null) {
+        /*if (view != null) {
             Log.i(TAG, "===setOnyxContentFrameView===");
             if (mOnyxContentFrame != null) {
                 if (mOnyxContentFrame.getVisibility() != View.VISIBLE) {
@@ -1147,7 +1149,7 @@ public class InputMethodService extends AbstractInputMethodService {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             }
-        }
+        }*/
     }
 
     /**
@@ -1591,21 +1593,20 @@ public class InputMethodService extends AbstractInputMethodService {
             else if (newSelEnd > len) newSelEnd = len;
             eet.setSelection(newSelStart, newSelEnd);
             eet.finishInternalChanges();
+        } else if (eet != null && !isFullscreenMode()) {
+            Log.i(TAG, "(eet != null && !isFullscreenMode())");
+            final int off = mExtractedText.startOffset;
+            eet.startInternalChanges();
+            newSelStart -= off;
+            newSelEnd -= off;
+            final int len = eet.getText().length();
+            if (newSelStart < 0) newSelStart = 0;
+            else if (newSelStart > len) newSelStart = len;
+            if (newSelEnd < 0) newSelEnd = 0;
+            else if (newSelEnd > len) newSelEnd = len;
+            eet.setSelection(newSelStart, newSelEnd);
+            eet.finishInternalChanges();
         }
-        //else if (eet != null && !isFullscreenMode()) {
-        //    Log.i(TAG, "(eet != null && !isFullscreenMode())");
-        //    final int off = mExtractedText.startOffset;
-        //    eet.startInternalChanges();
-        //    newSelStart -= off;
-        //    newSelEnd -= off;
-        //    final int len = eet.getText().length();
-        //    if (newSelStart < 0) newSelStart = 0;
-        //    else if (newSelStart > len) newSelStart = len;
-        //    if (newSelEnd < 0) newSelEnd = 0;
-        //    else if (newSelEnd > len) newSelEnd = len;
-        //    eet.setSelection(newSelStart, newSelEnd);
-        //    eet.finishInternalChanges();
-        //}
     }
 
     /**
@@ -1829,8 +1830,7 @@ public class InputMethodService extends AbstractInputMethodService {
                 case KeyEvent.KEYCODE_DPAD_DOWN:
                     return true;
             }
-        } 
-        /*else if (eet != null && !isFullscreenMode()) {
+        } else if (eet != null && !isFullscreenMode()) {
             Log.i(TAG, "(eet != null && !isFullscreenMode())");
             MovementMethod movement = eet.getMovementMethod();
             Layout layout = eet.getLayout();
@@ -1874,7 +1874,7 @@ public class InputMethodService extends AbstractInputMethodService {
                 case KeyEvent.KEYCODE_DPAD_DOWN:
                     return true;
             }
-        }*/
+        }
         
         return false;
     }
@@ -2193,8 +2193,7 @@ public class InputMethodService extends AbstractInputMethodService {
             if (inputChanged) {
                 onExtractingInputChanged(ei);
             }
-        }
-        /*else if (eet != null && !isFullscreenMode()) {
+        } else if (eet != null && !isFullscreenMode()) {
             Log.i(TAG, "else ===startExtractingText===");
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
@@ -2234,7 +2233,7 @@ public class InputMethodService extends AbstractInputMethodService {
             if (inputChanged) {
                 onExtractingInputChanged(ei);
             }
-        }*/
+        }
     }
     
     /**
@@ -2302,7 +2301,7 @@ public class InputMethodService extends AbstractInputMethodService {
         }
     }
 
-    public ExtractedText getOnyxExtractedText() {
+    /*public ExtractedText getOnyxExtractedText() {
         if (mExtractEditText != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
             return null;
@@ -2337,5 +2336,5 @@ public class InputMethodService extends AbstractInputMethodService {
         }
 
         return ei;
-    }
+    }*/
 }
