@@ -1112,14 +1112,27 @@ public class InputMethodService extends AbstractInputMethodService {
         //        ViewGroup.LayoutParams.WRAP_CONTENT));
 
 
-        View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
-        mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
-        mExtractEditText.setIME(this);
+        //View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
+        //mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
+        //mExtractEditText.setIME(this);
         
-        Log.i(TAG, "mExtractEditText : "+mExtractEditText);
-        mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
+        View onyxview = onCreateExtractTextView();
+
+        mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        if (view != null) {
+            Log.i(TAG, "view != null");
+            mExtractEditText = (ExtractEditText)view.findViewById(
+                    com.android.internal.R.id.inputExtractEditText);
+            mExtractEditText.setIME(this);
+        }
+        startExtractingText(false);
+
+        Log.i(TAG, "mExtractEditText : "+mExtractEditText);
+        //mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
+        //        ViewGroup.LayoutParams.MATCH_PARENT,
+        //        ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     /**
@@ -1528,10 +1541,10 @@ public class InputMethodService extends AbstractInputMethodService {
             return;
         }
         if (text != null) {
-            Log.i(TAG, "mExtractEditText: "+mExtractEditText+", text: "+text.text);
             if (mExtractEditText != null) {
                 mExtractedText = text;
                 mExtractEditText.setExtractedText(text);
+                Log.i(TAG, "mExtractEditText.getText: "+mExtractEditText.getText()+", text: "+text.text);
             }
         }
     }
