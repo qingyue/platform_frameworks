@@ -1111,34 +1111,29 @@ public class InputMethodService extends AbstractInputMethodService {
 			mOnyxContentFrame.setVisibility(View.VISIBLE);
 	    }
 
-        mOnyxContentFrame.removeAllViews();
-        //mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
-        //        ViewGroup.LayoutParams.MATCH_PARENT,
-        //        ViewGroup.LayoutParams.WRAP_CONTENT));
-
-
-        //View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
-        //mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
-        //mExtractEditText.setIME(this);
-        
-        View onyxView = onCreateExtractTextView();
-
-        Log.i(TAG, "onyxView: "+onyxView);
+        View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
         if (onyxView != null) {
-            mOnyxContentFrame.addView(onyxView, new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-
-            mExtractEditText = (ExtractEditText)onyxView.findViewById(
-                    com.android.internal.R.id.inputExtractEditText);
+            mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
             mExtractEditText.setIME(this);
+            startExtractingText(false);
+            Log.i(TAG, "mExtractEditText : "+mExtractEditText);
+            mOnyxContentFrame.removeAllViews();
+            mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
         }
-        startExtractingText(false);
 
-        Log.i(TAG, "mExtractEditText : "+mExtractEditText);
-        //mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
-        //        ViewGroup.LayoutParams.MATCH_PARENT,
-        //        ViewGroup.LayoutParams.WRAP_CONTENT));
+        //View onyxView = onCreateExtractTextView();
+        //Log.i(TAG, "onyxView: "+onyxView);
+        //if (onyxView != null) {
+        //    mOnyxContentFrame.addView(onyxView, new FrameLayout.LayoutParams(
+        //            ViewGroup.LayoutParams.MATCH_PARENT,
+        //            ViewGroup.LayoutParams.MATCH_PARENT));
+        //
+        //    mExtractEditText = (ExtractEditText)onyxView.findViewById(
+        //            com.android.internal.R.id.inputExtractEditText);
+        //    mExtractEditText.setIME(this);
+        //}
     }
 
     /**
