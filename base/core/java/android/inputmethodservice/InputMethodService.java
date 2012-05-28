@@ -1102,8 +1102,9 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setOnyxContentFrameView(View view) {
-        Log.i(TAG, "setOnyxContentFrameView mInShowWindow: "+mInShowWindow);
-        if (mInShowWindow) {
+        Log.i(TAG, "setOnyxContentFrameView mWindowVisible: "+mWindowVisible);
+        if (mWindowVisible) {
+            Log.i(TAG, "IME is show");
             return;
         }
         if (mOnyxContentFrame.getVisibility() != View.VISIBLE) {
