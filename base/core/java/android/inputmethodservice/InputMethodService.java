@@ -1116,14 +1116,15 @@ public class InputMethodService extends AbstractInputMethodService {
         //mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
         //mExtractEditText.setIME(this);
         
-        View onyxview = onCreateExtractTextView();
+        View onyxView = onCreateExtractTextView();
 
-        mOnyxContentFrame.addView(view, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        if (view != null) {
-            Log.i(TAG, "view != null");
-            mExtractEditText = (ExtractEditText)view.findViewById(
+        Log.i(TAG, "onyxView: "+onyxView);
+        if (onyxView != null) {
+            mOnyxContentFrame.addView(onyxView, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+
+            mExtractEditText = (ExtractEditText)onyxView.findViewById(
                     com.android.internal.R.id.inputExtractEditText);
             mExtractEditText.setIME(this);
         }
