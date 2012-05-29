@@ -1099,7 +1099,7 @@ public class InputMethodService extends AbstractInputMethodService {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
     
-    public void setOnyxContentFrameView(View view) {
+    public void setOnyxContentFrameView() {
         if (mIsFullscreen) {
             return;
         }
