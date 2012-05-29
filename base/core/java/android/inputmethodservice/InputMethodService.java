@@ -1101,18 +1101,13 @@ public class InputMethodService extends AbstractInputMethodService {
     
     public void setOnyxContentFrameView() {
         Log.i(TAG, "===setOnyxContentFrameView===");
-        //if (mIsFullscreen) {
-        //    Log.i(TAG, "===mIsFullscreen===");
-        //    return;
-        //}
+        if (mIsFullscreen) {
+            Log.i(TAG, "===mIsFullscreen===");
+            return;
+        }
 
-        //if (!mWindowVisible && mExtractEditText != null) {
-        //    Log.i(TAG, "===if (!mWindowVisible && mExtractEditText != null)===");
-        //    return;
-        //}
-
-        if (!mWindowVisible) {
-            Log.i(TAG, "===if (!mWindowVisible)===");
+        if (!mWindowVisible && mExtractEditText != null) {
+            Log.i(TAG, "===if (!mWindowVisible && mExtractEditText != null)===");
             return;
         }
 
