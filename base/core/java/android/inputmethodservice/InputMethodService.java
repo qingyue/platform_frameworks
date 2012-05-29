@@ -1100,7 +1100,11 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setOnyxContentFrameView(View view) {
-        if (mWindowVisible) {
+        if (mIsFullscreen) {
+            return;
+        }
+
+        if (!mWindowVisible && mExtractEditText != null) {
             return;
         }
 
@@ -2251,6 +2255,10 @@ public class InputMethodService extends AbstractInputMethodService {
             if (mOnyxContentFrame.getVisibility() != View.GONE) {
 			    mOnyxContentFrame.setVisibility(View.GONE);
 	        }
+        }
+
+        if (!mIsFullscreen && mExtractEditText != null) {
+            mExtractEditText = null;
         }
     }
 }
