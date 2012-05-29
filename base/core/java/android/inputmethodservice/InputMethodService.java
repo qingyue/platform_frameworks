@@ -1100,13 +1100,21 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setOnyxContentFrameView() {
+        Log.i(TAG, "===setOnyxContentFrameView===");
         //if (mIsFullscreen) {
+        //    Log.i(TAG, "===mIsFullscreen===");
         //    return;
         //}
 
         //if (!mWindowVisible && mExtractEditText != null) {
+        //    Log.i(TAG, "===if (!mWindowVisible && mExtractEditText != null)===");
         //    return;
         //}
+
+        if (!mWindowVisible) {
+            Log.i(TAG, "===if (!mWindowVisible)===");
+            return;
+        }
 
         View onyxView = mInflater.inflate(com.android.internal.R.layout.onyx_input_method_extract_view, null);
         if (onyxView != null) {
