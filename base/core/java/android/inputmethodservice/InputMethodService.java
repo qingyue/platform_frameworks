@@ -1101,7 +1101,7 @@ public class InputMethodService extends AbstractInputMethodService {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
     
-    public void setOnyxContentFrameView(View view) {
+    public void setOnyxContentFrameView() {
         Log.i(TAG, "setOnyxContentFrameView mWindowVisible: "+mWindowVisible);
         if (mWindowVisible) {
             Log.i(TAG, "IME is show");
