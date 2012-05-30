@@ -1061,14 +1061,12 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setExtractView(View view) {
-        Log.i(TAG, "===setExtractView===");
         mExtractFrame.removeAllViews();
         mExtractFrame.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         mExtractView = view;
         if (view != null) {
-            Log.i(TAG, "view != null");
             mExtractEditText = (ExtractEditText)view.findViewById(
                     com.android.internal.R.id.inputExtractEditText);
             mExtractEditText.setIME(this);
@@ -1102,9 +1100,14 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     public void setOnyxContentFrameView() {
-        Log.i(TAG, "setOnyxContentFrameView mWindowVisible: "+mWindowVisible);
-        if (mWindowVisible) {
-            Log.i(TAG, "IME is show");
+        Log.i(TAG, "===setOnyxContentFrameView===");
+        if (mIsFullscreen) {
+            Log.i(TAG, "===mIsFullscreen===");
+            return;
+        }
+
+        if (!mWindowVisible && mExtractEditText != null) {
+            Log.i(TAG, "===if (!mWindowVisible && mExtractEditText != null)===");
             return;
         }
 
@@ -1117,7 +1120,6 @@ public class InputMethodService extends AbstractInputMethodService {
                 mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
                 mExtractEditText.setIME(this);
                 startExtractingText(false);
-                Log.i(TAG, "mExtractEditText : "+mExtractEditText);
                 mOnyxContentFrame.removeAllViews();
                 mOnyxContentFrame.addView(mExtractEditText, new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -1527,7 +1529,6 @@ public class InputMethodService extends AbstractInputMethodService {
      * method is running in fullscreen mode.
      */
     public void onUpdateExtractedText(int token, ExtractedText text) {
-        Log.i(TAG, "===onUpdateExtractedText=== text: "+text.text);
         if (mExtractedToken != token) {
             return;
         }
@@ -1535,7 +1536,6 @@ public class InputMethodService extends AbstractInputMethodService {
             if (mExtractEditText != null) {
                 mExtractedText = text;
                 mExtractEditText.setExtractedText(text);
-                Log.i(TAG, "mExtractEditText.getText: "+mExtractEditText.getText()+", text: "+text.text);
             }
         }
     }
@@ -1552,10 +1552,8 @@ public class InputMethodService extends AbstractInputMethodService {
     public void onUpdateSelection(int oldSelStart, int oldSelEnd,
             int newSelStart, int newSelEnd,
             int candidatesStart, int candidatesEnd) {
-        Log.i(TAG, "===onUpdateSelection===");
         final ExtractEditText eet = mExtractEditText;
         if (eet != null && isFullscreenMode() && mExtractedText != null) {
-            Log.i(TAG, "(eet != null && isFullscreenMode() && mExtractedText != null)");
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
@@ -1568,7 +1566,6 @@ public class InputMethodService extends AbstractInputMethodService {
             eet.setSelection(newSelStart, newSelEnd);
             eet.finishInternalChanges();
         } else if (eet != null && !isFullscreenMode()) {
-            Log.i(TAG, "(eet != null && !isFullscreenMode())");
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
@@ -1751,10 +1748,8 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     boolean doMovementKey(int keyCode, KeyEvent event, int count) {
-        Log.i(TAG, "===doMovementKey===");
         final ExtractEditText eet = mExtractEditText;
         if (isExtractViewShown() && isInputViewShown() && eet != null) {
-            Log.i(TAG, "(isExtractViewShown() && isInputViewShown() && eet != null)");
             // If we are in fullscreen mode, the cursor will move around
             // the extract edit text, but should NOT cause focus to move
             // to other fields.
@@ -1805,10 +1800,8 @@ public class InputMethodService extends AbstractInputMethodService {
                     return true;
             }
         } else if (eet != null && !isFullscreenMode()) {
-            Log.i(TAG, "(eet != null && !isFullscreenMode())");
             MovementMethod movement = eet.getMovementMethod();
-            Layout layout = eet.getLayout();
-            if (movement != null && layout != null) {
+            if (movement != null) {
                 if (count == MOVEMENT_DOWN) {
                     if (movement.onKeyDown(eet,
                             (Spannable)eet.getText(), keyCode, event)) {
@@ -1965,12 +1958,10 @@ public class InputMethodService extends AbstractInputMethodService {
      * Re-implement this to provide whatever behavior you want.
      */
     public void onExtractedTextClicked() {
-        Log.i(TAG, "===onExtractedTextClicked===");
         if (mExtractEditText == null) {
             return;
         }
         if (mExtractEditText.hasVerticalScrollBar()) {
-            Log.i(TAG, "(mExtractEditText.hasVerticalScrollBar())");
             setCandidatesViewShown(false);
         }
     }
@@ -1986,12 +1977,10 @@ public class InputMethodService extends AbstractInputMethodService {
      * @param dy The amount of cursor movement in the y dimension.
      */
     public void onExtractedCursorMovement(int dx, int dy) {
-        Log.i(TAG, "===onExtractedCursorMovement===");
         if (mExtractEditText == null || dy == 0) {
             return;
         }
         if (mExtractEditText.hasVerticalScrollBar()) {
-            Log.i(TAG, "mExtractEditText.hasVerticalScrollBar()");
             setCandidatesViewShown(false);
         }
     }
@@ -2120,11 +2109,9 @@ public class InputMethodService extends AbstractInputMethodService {
     }
     
     void startExtractingText(boolean inputChanged) {
-        Log.i(TAG, "===startExtractingText===");
         final ExtractEditText eet = mExtractEditText;
         if (eet != null && getCurrentInputStarted()
                 && isFullscreenMode()) {
-            Log.i(TAG, "isFullscreenMode: "+isFullscreenMode());
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
@@ -2168,7 +2155,6 @@ public class InputMethodService extends AbstractInputMethodService {
                 onExtractingInputChanged(ei);
             }
         } else if (eet != null && !isFullscreenMode()) {
-            Log.i(TAG, "else ===startExtractingText===");
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
@@ -2272,6 +2258,10 @@ public class InputMethodService extends AbstractInputMethodService {
             if (mOnyxContentFrame.getVisibility() != View.GONE) {
 			    mOnyxContentFrame.setVisibility(View.GONE);
 	        }
+        }
+
+        if (!mIsFullscreen && mExtractEditText != null) {
+            mExtractEditText = null;
         }
     }
 }
