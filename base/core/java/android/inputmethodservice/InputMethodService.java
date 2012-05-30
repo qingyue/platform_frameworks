@@ -1106,8 +1106,9 @@ public class InputMethodService extends AbstractInputMethodService {
             return;
         }
 
-        if (!mWindowVisible && mExtractEditText != null) {
-            Log.i(TAG, "===if (!mWindowVisible && mExtractEditText != null)===");
+        Log.i(TAG, "mWindowVisible: "+mWindowVisible+", mExtractEditText: "+mExtractEditText);
+        if (mWindowVisible && mExtractEditText != null) {
+            Log.i(TAG, "===if (mWindowVisible && mExtractEditText != null)===");
             return;
         }
 
