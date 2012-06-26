@@ -37,7 +37,7 @@ public class DisplayMetrics {
     /**
      * Standard quantized DPI for medium-density screens.
      */
-    public static final int DENSITY_MEDIUM = 130;
+    public static final int DENSITY_MEDIUM = 140;
 
     /**
      * Standard quantized DPI for high-density screens.
@@ -47,7 +47,7 @@ public class DisplayMetrics {
     /**
      * Standard quantized DPI for extra-high-density screens.
      */
-    public static final int DENSITY_XHIGH = 190;
+    public static final int DENSITY_XHIGH = 320;
 
     /**
      * The reference density used throughout the system.
