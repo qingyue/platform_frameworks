@@ -493,6 +493,8 @@ public class AppSecurityPermissions  implements View.OnClickListener {
     }
 
     public void onClick(View v) {
+        mShowMore.invalidate(View.UI_GU_MODE);
+        mNonDangerousList.invalidate(View.UI_GU_MODE);
         if(localLOGV) Log.i(TAG, "mExpanded="+mExpanded);
         mExpanded = !mExpanded;
         showPermissions();
