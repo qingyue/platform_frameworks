@@ -1017,7 +1017,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "1".equals(SystemProperties.get("ro.kernel.qemu")) ? 1 : 0);
             loadIntegerSetting(stmt, Settings.System.SCREEN_OFF_TIMEOUT,
                     R.integer.def_screen_off_timeout);
-    
+            loadIntegerSetting(stmt, Settings.System.SCREEN_OFF_TIMEOUT_BACKUP,
+                    R.integer.def_screen_off_timeout);
+            
             // Set default cdma emergency tone
             loadSetting(stmt, Settings.System.EMERGENCY_TONE, 0);
 
