@@ -108,6 +108,9 @@ class PowerManagerService extends IPowerManager.Stub
 
     // For debouncing the proximity sensor.
     private static final int PROXIMITY_SENSOR_DELAY = 1000;
+    
+    // For shutdown the device.
+    private static final int DEFAULT_POWEROFF_TIMEOUT = 20 * 60 * 1000;
 
     // trigger proximity if distance is less than 5 cm
     private static final float PROXIMITY_THRESHOLD = 5.0f;
@@ -1381,7 +1384,6 @@ class PowerManagerService extends IPowerManager.Stub
                 }
                 if (value == 1) {
                     mScreenOnStart = SystemClock.uptimeMillis();
-
                     policy.screenTurnedOn();
                     try {
                         ActivityManagerNative.getDefault().wakingUp();
@@ -1631,6 +1633,18 @@ class PowerManagerService extends IPowerManager.Stub
             {   
                 state = 2;
                 mSystemState = 2;
+                int timeout = Settings.System.getInt(mContext.getContentResolver(),
+                        SCREEN_OFF_TIMEOUT, -1);
+                if (mContext != null && ActivityManagerNative.isSystemReady()
+                        && timeout >= DEFAULT_POWEROFF_TIMEOUT) {
+                    Slog.d(TAG, "--- ACTION_REQUEST_SHUTDOWN ---");
+                    Intent intent = new Intent(Intent.ACTION_REQUEST_SHUTDOWN);
+                    intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    state = 1;
+                    mSystemState = 1;
+                }
             }
         }
         
