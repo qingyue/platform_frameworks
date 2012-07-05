@@ -419,7 +419,6 @@ bool SurfaceFlinger::threadLoop()
         logger.log(GraphicLog::SF_COMPOSITION_COMPLETE, index);
         hw.compositionComplete();
 
-
         EinkOptPostFramebuffer();
 
         releaseDirtyGroup();
@@ -752,12 +751,11 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
 
         if (mSurfaceInitUpdate && !mSkipNextInitUpdate)
         {
-            LOGI("--init update---\n");
+            LOGI("===init update===\n");
             allupdatemode.add(UI_FULL_MODE);
-            //mSurfaceInitUpdate = false;
             mSkipNextInitUpdate = true;
         }
-	else
+        else
         {
             LOGI("---default update---\n");
             allupdatemode.add(UI_DEFAULT_MODE);
@@ -942,8 +940,7 @@ void SurfaceFlinger::handleTransactionLocked(
 
             mVisibleRegionsDirty = true;
             mDirtyRegion.set(hw.bounds());
-            LOGI("--->Screen orientation change, set init update\n");
-            mSurfaceInitUpdate = true;
+            LOGI("--->Screen orientation change!\n");
         }
 
         if (mCurrentState.freezeDisplay != mDrawingState.freezeDisplay) {
@@ -1150,64 +1147,92 @@ void SurfaceFlinger::handlePageFlip()
             mDrawingState.layersSortedByZ);
     visibleRegions |= lockPageFlip(currentLayers);
 
-        const DisplayHardware& hw = graphicPlane(0).displayHardware();
-        const Region screenRegion(hw.bounds());
-        if (visibleRegions) {
-            Region opaqueRegion;
-            computeVisibleRegions(currentLayers, mDirtyRegion, opaqueRegion);
+    const DisplayHardware& hw = graphicPlane(0).displayHardware();
+    const Region screenRegion(hw.bounds());
+    if (visibleRegions) {
+        Region opaqueRegion;
+        computeVisibleRegions(currentLayers, mDirtyRegion, opaqueRegion);
 
-            /*
-             *  rebuild the visible layer list
-             */
-            mVisibleLayersSortedByZ.clear();
-            const LayerVector& currentLayers(mDrawingState.layersSortedByZ);
-            size_t count = currentLayers.size();
-            mVisibleLayersSortedByZ.setCapacity(count);
-            for (size_t i=0 ; i<count ; i++) {
-                if (!currentLayers[i]->visibleRegionScreen.isEmpty())
-                    mVisibleLayersSortedByZ.add(currentLayers[i]);
-            }
+        /*
+         *  rebuild the visible layer list
+         */
+        mVisibleLayersSortedByZ.clear();
+        const LayerVector& currentLayers(mDrawingState.layersSortedByZ);
+        size_t count = currentLayers.size();
+        mVisibleLayersSortedByZ.setCapacity(count);
+        for (size_t i=0 ; i<count ; i++) {
+            if (!currentLayers[i]->visibleRegionScreen.isEmpty())
+                mVisibleLayersSortedByZ.add(currentLayers[i]);
+        }
 
 #ifdef USE_COMPOSITION_BYPASS
-            sp<LayerBase> bypassLayer;
-            const size_t numVisibleLayers = mVisibleLayersSortedByZ.size();
-            if (numVisibleLayers == 1) {
-                const sp<LayerBase>& candidate(mVisibleLayersSortedByZ[0]);
-                const Region& visibleRegion(candidate->visibleRegionScreen);
-                const Region reminder(screenRegion.subtract(visibleRegion));
-                if (reminder.isEmpty()) {
-                    // fullscreen candidate!
-                    LOGI("--->BYPASS found fullscrfeen candidate!\n");
-                    bypassLayer = candidate;
-                }
+        sp<LayerBase> bypassLayer;
+        const size_t numVisibleLayers = mVisibleLayersSortedByZ.size();
+         if (numVisibleLayers == 1) {
+            const sp<LayerBase>& candidate(mVisibleLayersSortedByZ[0]);
+            const Region& visibleRegion(candidate->visibleRegionScreen);
+            const Region reminder(screenRegion.subtract(visibleRegion));
+            if (reminder.isEmpty()) {
+                // fullscreen candidate!
+                LOGI("--->BYPASS found fullscrfeen candidate!\n");
+                bypassLayer = candidate;
             }
-            setBypassLayer(bypassLayer);
+        }
+        setBypassLayer(bypassLayer);
 #endif
 
-            mWormholeRegion = screenRegion.subtract(opaqueRegion);
-            mVisibleRegionsDirty = false;
-        }
+        mWormholeRegion = screenRegion.subtract(opaqueRegion);
+        mVisibleRegionsDirty = false;
+    }
 
     unlockPageFlip(currentLayers);
     mDirtyRegion.andSelf(screenRegion);
     LOGI("--->mDirtyRegion(left=%d, top=%d, right =%d, bottom=%d\n)", mDirtyRegion.getBounds().left, mDirtyRegion.getBounds().top, mDirtyRegion.getBounds().right, mDirtyRegion.getBounds().bottom);
     //WO, if the dirty region is whole screen, set init update flag
-    if (mBootFinished)
+    if (mBootFinished && hw.isScreenAcquired())
     {
         if (mDirtyRegion.getBounds() == hw.bounds())
         {
             LOGI("===>Set init update flag<===\n");
             mSurfaceInitUpdate = true;
         }
-        else if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == 35))
-        {
-            LOGI("--->Set init update flag<---\n");
-            mSurfaceInitUpdate = true;    
-        }
         else
         {
-            LOGI("===>Set default update flag<===\n");
+            int orientation = graphicPlane(0).getOrientation();
+            LOGI("--->Set default update flag, %d<---\n", orientation);
             mSurfaceInitUpdate = false;
+            if (orientation ==  ISurfaceComposer::eOrientationDefault)
+            {
+                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == 35))
+                {
+                    LOGI("===>Portrait0, Set init update flag<===\n");
+                    mSurfaceInitUpdate = true;    
+                }
+            }
+            else if (orientation ==  ISurfaceComposer::eOrientation180)
+            {
+                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == (hw.bounds().right-35)) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+                {
+                    LOGI("===>Portrait180, Set init update flag<===\n");
+                    mSurfaceInitUpdate = true;    
+                }
+            }
+            else if (orientation ==  ISurfaceComposer::eOrientation90)
+            {
+                if ((mDirtyRegion.getBounds().top == 35) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+                {
+                    LOGI("===>Lanscape90, Set init update flag<===\n");
+                    mSurfaceInitUpdate = true;    
+                }
+            }
+            else if (orientation ==  ISurfaceComposer::eOrientation270)
+            {
+               if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == (hw.bounds().bottom-35)) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+                {
+                    LOGI("===>Lanscape270, Set init update flag<===\n");
+                    mSurfaceInitUpdate = true;    
+                }
+            }
         }
     }
 }
@@ -1707,10 +1732,6 @@ sp<ISurface> SurfaceFlinger::createSurface(const sp<Client>& client, int pid,
         }
 
         setTransactionFlags(eTransactionNeeded);
-
-	//WO, init surface update
-	//LOGI("--->createSUrface, set init update\n");
-	//mSurfaceInitUpdate = true;
     }
 
     return surfaceHandle;
@@ -2561,8 +2582,6 @@ status_t SurfaceFlinger::turnElectronBeamOnImplLocked(int32_t mode)
 
     // make sure to redraw the whole screen when the animation is done
     mDirtyRegion.set(hw.bounds());
-    LOGI("--->turnElectronBeamOn, set init update\n");
-    mSurfaceInitUpdate = true;
     signalEvent();
 
     return NO_ERROR;
