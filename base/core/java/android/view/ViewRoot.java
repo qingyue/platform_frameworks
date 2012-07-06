@@ -574,6 +574,12 @@ public final class ViewRoot extends Handler implements ViewParentEink, ViewParen
                 view.assignParent(this);
                 mAddedTouchMode = (res&WindowManagerImpl.ADD_FLAG_IN_TOUCH_MODE) != 0;
                 mAppVisible = (res&WindowManagerImpl.ADD_FLAG_APP_VISIBLE) != 0;
+
+                if (mAppVisible) {
+                    Log.d(TAG, "App visible: " + mAppVisible);
+                }
+                Log.d(TAG, "GC invalidate");
+                mView.invalidate(View.UI_GC_MODE);
             }
         }
     }
