@@ -236,8 +236,11 @@ public class InputMethodService extends AbstractInputMethodService {
     FrameLayout mExtractFrame;
     FrameLayout mCandidatesFrame;
     FrameLayout mInputFrame;
+
     /**
-     *{@hide}
+     * {@hide}
+     * @author qingyue
+     * Used to display Non-full screen mode mExtractEditText
      */
     FrameLayout mOnyxContentFrame;
     
@@ -1098,12 +1101,24 @@ public class InputMethodService extends AbstractInputMethodService {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
-    
+
+    /**
+     * @author qingyue
+     *
+     * Setting mOnyxContentFrame and mExtractEditText
+     */
     public void setOnyxContentFrameView() {
+
+        /**
+         * Full-screen mode return
+         */
         if (mIsFullscreen) {
             return;
         }
 
+        /**
+         * Input method is displayed or (mExtractEditText != null)  return
+         */
         if (mWindowVisible && mExtractEditText != null) {
             return;
         }
@@ -1562,7 +1577,12 @@ public class InputMethodService extends AbstractInputMethodService {
             else if (newSelEnd > len) newSelEnd = len;
             eet.setSelection(newSelStart, newSelEnd);
             eet.finishInternalChanges();
-        } else if (eet != null && !isFullscreenMode()) {
+        }
+
+        /**
+         * @author qingyue
+         */
+        if (eet != null && !isFullscreenMode()) {
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
@@ -1796,7 +1816,12 @@ public class InputMethodService extends AbstractInputMethodService {
                 case KeyEvent.KEYCODE_DPAD_DOWN:
                     return true;
             }
-        } else if (eet != null && !isFullscreenMode()) {
+        }
+
+        /**
+         * @author qingyue
+         */
+        if (eet != null && !isFullscreenMode()) {
             MovementMethod movement = eet.getMovementMethod();
             if (movement != null) {
                 if (count == MOVEMENT_DOWN) {
@@ -2151,7 +2176,14 @@ public class InputMethodService extends AbstractInputMethodService {
             if (inputChanged) {
                 onExtractingInputChanged(ei);
             }
-        } else if (eet != null && !isFullscreenMode()) {
+        }
+
+        /**
+         * @author qingyue
+         *
+         * Initialization mExtractEditText
+         */
+        if (eet != null && !isFullscreenMode()) {
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
@@ -2249,6 +2281,9 @@ public class InputMethodService extends AbstractInputMethodService {
                 + " touchableInsets=" + mTmpInsets.touchableInsets);
     }
 
+    /**
+     * @author qingyue
+     */
     public void hideOnyxContentFrame() {
         if (mOnyxContentFrame != null) {
             mOnyxContentFrame.removeAllViews();
