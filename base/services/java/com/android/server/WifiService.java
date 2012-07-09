@@ -299,20 +299,22 @@ public class WifiService extends IWifiManager.Stub {
         /* Start if Wi-Fi is enabled or the saved state indicates Wi-Fi was on */
         boolean wifiEnabled = !isAirplaneModeOn()
                 && (getPersistedWifiEnabled() || testAndClearWifiSavedState());
-        Slog.i(TAG, "WifiService starting up with Wi-Fi " +
-                (wifiEnabled ? "enabled" : "disabled"));
+        Slog.i(TAG, "WifiService starting up with Wi-Fi " + (wifiEnabled ? "enabled" : "disabled"));
         setWifiEnabled(wifiEnabled);
         if (wifiEnabled) {
+            int timeout = Settings.System.getInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT,
+                    -1);
             Settings.System.putInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT_BACKUP,
-                    Settings.System.getInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT,
-                            -1));// save screen_off_timeout to
-                                 // screen_off_timeout_backup
+                    timeout);// save screen_off_timeout to
+                             // screen_off_timeout_backup
             Log.d(TAG,
                     "Set SCREEN_OFF_TIMEOUT_BACKUP is "
                             + Settings.System.getInt(mContext.getContentResolver(),
                                     SCREEN_OFF_TIMEOUT_BACKUP, -1));
-            Settings.System.putInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT,
-                    DEFAULT_SCREEN_OFF_TIMEOUT_WIFI);
+            if (timeout < DEFAULT_SCREEN_OFF_TIMEOUT_WIFI) {
+                Settings.System.putInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT,
+                        DEFAULT_SCREEN_OFF_TIMEOUT_WIFI);
+            }
         }
     }
 

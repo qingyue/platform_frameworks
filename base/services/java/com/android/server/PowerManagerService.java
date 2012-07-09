@@ -19,6 +19,7 @@ package com.android.server;
 import com.android.internal.app.IBatteryStats;
 import com.android.internal.app.ShutdownThread;
 import com.android.server.am.BatteryStatsService;
+import com.android.internal.policy.impl.PhoneWindowManager;
 
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
@@ -69,6 +70,7 @@ import static android.provider.Settings.System.STAY_ON_WHILE_PLUGGED_IN;
 import static android.provider.Settings.System.WINDOW_ANIMATION_SCALE;
 import static android.provider.Settings.System.TRANSITION_ANIMATION_SCALE;
 import static android.provider.Settings.System.XEC_DLS_CONTROL;
+import static com.android.internal.policy.impl.PhoneWindowManager.POWER_KEY_SUSPEND;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -110,7 +112,7 @@ class PowerManagerService extends IPowerManager.Stub
     private static final int PROXIMITY_SENSOR_DELAY = 1000;
     
     // For shutdown the device.
-    private static final int DEFAULT_POWEROFF_TIMEOUT = 20 * 60 * 1000;
+    private static final int DEFAULT_POWEROFF_TIMEOUT = 30 * 60 * 1000;
 
     // trigger proximity if distance is less than 5 cm
     private static final float PROXIMITY_THRESHOLD = 5.0f;
@@ -1275,11 +1277,12 @@ class PowerManagerService extends IPowerManager.Stub
     }
 
     private class TimeoutTask implements Runnable
-    {
+ {
         int nextState; // access should be synchronized on mLocks
+
         long remainingTimeoutOverride;
-        public void run()
-        {
+
+        public void run() {
             synchronized (mLocks) {
                 if (mSpew) {
                     Slog.d(TAG, "user activity timeout timed out nextState=" + this.nextState);
@@ -1288,7 +1291,7 @@ class PowerManagerService extends IPowerManager.Stub
                 if (nextState == -1) {
                     return;
                 }
-                
+
                 if (this.nextState == SCREEN_DIM) {
                     int timeout = Settings.System.getInt(mContext.getContentResolver(),
                             SCREEN_OFF_TIMEOUT, -1);
@@ -1299,24 +1302,26 @@ class PowerManagerService extends IPowerManager.Stub
                         intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(intent);
+                        return;
                     }
-                } else {
-                    mUserState = this.nextState;
-                    setPowerState(this.nextState | mWakeLockState);
+                    if (timeout >= 60 * 1000) {
+                        PhoneWindowManager.writeContent("/sys/power/power_mode", POWER_KEY_SUSPEND);
+                    }
+                }
+                mUserState = this.nextState;
+                setPowerState(this.nextState | mWakeLockState);
 
-                    long now = SystemClock.uptimeMillis();
+                long now = SystemClock.uptimeMillis();
 
-                    switch (this.nextState) {
-                        case SCREEN_BRIGHT:
-                            if (mDimDelay >= 0) {
-                                setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_DIM);
-                                break;
-                            }
-                        case SCREEN_DIM:
-                            setTimeoutLocked(now, remainingTimeoutOverride,
-                             SCREEN_OFF);
+                switch (this.nextState) {
+                    case SCREEN_BRIGHT:
+                        if (mDimDelay >= 0) {
+                            setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_DIM);
                             break;
-                    }
+                        }
+                    case SCREEN_DIM:
+                        setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_OFF);
+                        break;
                 }
             }
         }
