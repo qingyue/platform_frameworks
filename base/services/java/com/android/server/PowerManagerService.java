@@ -1288,22 +1288,35 @@ class PowerManagerService extends IPowerManager.Stub
                 if (nextState == -1) {
                     return;
                 }
+                
+                if (this.nextState == SCREEN_DIM) {
+                    int timeout = Settings.System.getInt(mContext.getContentResolver(),
+                            SCREEN_OFF_TIMEOUT, -1);
+                    if (mContext != null && ActivityManagerNative.isSystemReady()
+                            && timeout >= DEFAULT_POWEROFF_TIMEOUT) {
+                        Slog.d(TAG, "--- ACTION_REQUEST_SHUTDOWN ---");
+                        Intent intent = new Intent(Intent.ACTION_REQUEST_SHUTDOWN);
+                        intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                    }
+                } else {
+                    mUserState = this.nextState;
+                    setPowerState(this.nextState | mWakeLockState);
 
-                mUserState = this.nextState;
-                setPowerState(this.nextState | mWakeLockState);
+                    long now = SystemClock.uptimeMillis();
 
-                long now = SystemClock.uptimeMillis();
-
-                switch (this.nextState)
-                {
-                    case SCREEN_BRIGHT:
-                        if (mDimDelay >= 0) {
-                            setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_DIM);
+                    switch (this.nextState) {
+                        case SCREEN_BRIGHT:
+                            if (mDimDelay >= 0) {
+                                setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_DIM);
+                                break;
+                            }
+                        case SCREEN_DIM:
+                            setTimeoutLocked(now, remainingTimeoutOverride,
+                             SCREEN_OFF);
                             break;
-                        }
-                    case SCREEN_DIM:
-                        setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_OFF);
-                        break;
+                    }
                 }
             }
         }
@@ -1633,18 +1646,6 @@ class PowerManagerService extends IPowerManager.Stub
             {   
                 state = 2;
                 mSystemState = 2;
-                int timeout = Settings.System.getInt(mContext.getContentResolver(),
-                        SCREEN_OFF_TIMEOUT, -1);
-                if (mContext != null && ActivityManagerNative.isSystemReady()
-                        && timeout >= DEFAULT_POWEROFF_TIMEOUT) {
-                    Slog.d(TAG, "--- ACTION_REQUEST_SHUTDOWN ---");
-                    Intent intent = new Intent(Intent.ACTION_REQUEST_SHUTDOWN);
-                    intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                    state = 1;
-                    mSystemState = 1;
-                }
             }
         }
         
