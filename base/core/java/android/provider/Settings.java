@@ -1327,7 +1327,14 @@ public final class Settings {
          * The timeout before the screen turns off.
          */
         public static final String SCREEN_OFF_TIMEOUT = "screen_off_timeout";
-
+        
+        /**
+         * The timeout backup when wifi is on.
+         */
+        public static final String SCREEN_OFF_TIMEOUT_BACKUP = "screen_off_timeout_backup";
+        
+        public static final int DEFAULT_SCREEN_OFF_TIMEOUT_WIFI = 10 * 60 * 1000; /* 10 minutes */
+        
         /**
          * If 0, the compatibility mode is off for all applications.
          * If 1, older applications run under compatibility mode.
@@ -1818,6 +1825,7 @@ public final class Settings {
             XEC_DLS_CONTROL,
             DIM_SCREEN,
             SCREEN_OFF_TIMEOUT,
+            SCREEN_OFF_TIMEOUT_BACKUP,
             SCREEN_BRIGHTNESS,
             SCREEN_BRIGHTNESS_MODE,
             VIBRATE_ON,

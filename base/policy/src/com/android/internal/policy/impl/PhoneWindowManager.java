@@ -174,7 +174,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     //tell kernel which suspend mode go in.
     static final String AUTO_SUSPEND = "1";//perpheral like sd card ,tp ,keyboard can wakeup device,include power key and usb.
-    static final String POWER_KEY_SUSPEND = "0";//power key and usb can wakeup devices.
+    public static final String POWER_KEY_SUSPEND = "0";//power key and usb can wakeup devices.
 
     // Useful scan codes.
     private static final int SW_LID = 0x00;
