@@ -1584,6 +1584,7 @@ public class InputMethodService extends AbstractInputMethodService {
          * @author qingyue
          */
         if (eet != null && !isFullscreenMode()) {
+            eee.setMaxLines(3);
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
@@ -1823,6 +1824,7 @@ public class InputMethodService extends AbstractInputMethodService {
          * @author qingyue
          */
         if (eet != null && !isFullscreenMode()) {
+            eet.setMaxLines(3);
             MovementMethod movement = eet.getMovementMethod();
             if (movement != null) {
                 if (count == MOVEMENT_DOWN) {
@@ -2185,6 +2187,7 @@ public class InputMethodService extends AbstractInputMethodService {
          * Initialization mExtractEditText
          */
         if (eet != null && !isFullscreenMode()) {
+            eet.setMaxLines(3);
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
