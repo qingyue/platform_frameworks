@@ -1584,7 +1584,7 @@ public class InputMethodService extends AbstractInputMethodService {
          * @author qingyue
          */
         if (eet != null && !isFullscreenMode()) {
-            eee.setMaxLines(3);
+            eet.setMaxLines(3);
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
