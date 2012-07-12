@@ -1130,6 +1130,7 @@ public class InputMethodService extends AbstractInputMethodService {
 	        }
             if (mOnyxContentFrame != null) {
                 mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
+                mExtractEditText.setMaxLines(3);
                 mExtractEditText.setIME(this);
                 startExtractingText(false);
                 mOnyxContentFrame.removeAllViews();
