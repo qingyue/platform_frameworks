@@ -1130,7 +1130,7 @@ public class InputMethodService extends AbstractInputMethodService {
 	        }
             if (mOnyxContentFrame != null) {
                 mExtractEditText = (ExtractEditText)onyxView.findViewById(com.android.internal.R.id.onyxInputExtractEditText);
-                mExtractEditText.setMaxLines(3);
+                mExtractEditText.setLines(1);
                 mExtractEditText.setIME(this);
                 startExtractingText(false);
                 mOnyxContentFrame.removeAllViews();
@@ -1584,7 +1584,7 @@ public class InputMethodService extends AbstractInputMethodService {
          * @author qingyue
          */
         if (eet != null && !isFullscreenMode()) {
-            eet.setMaxLines(3);
+            eet.setLines(1);
             final int off = mExtractedText.startOffset;
             eet.startInternalChanges();
             newSelStart -= off;
@@ -1824,7 +1824,7 @@ public class InputMethodService extends AbstractInputMethodService {
          * @author qingyue
          */
         if (eet != null && !isFullscreenMode()) {
-            eet.setMaxLines(3);
+            eet.setLines(1);
             MovementMethod movement = eet.getMovementMethod();
             if (movement != null) {
                 if (count == MOVEMENT_DOWN) {
@@ -2187,7 +2187,7 @@ public class InputMethodService extends AbstractInputMethodService {
          * Initialization mExtractEditText
          */
         if (eet != null && !isFullscreenMode()) {
-            eet.setMaxLines(3);
+            eet.setLines(1);
             mExtractedToken++;
             ExtractedTextRequest req = new ExtractedTextRequest();
             req.token = mExtractedToken;
