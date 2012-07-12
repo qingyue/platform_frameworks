@@ -8,6 +8,6 @@
     android:inputType="text"
     android:minLines="1"
     android:maxLines="3"
-    android:scrollbars="vertical" >
+    android:scrollbars="none" >
 
 </android.inputmethodservice.ExtractEditText>
