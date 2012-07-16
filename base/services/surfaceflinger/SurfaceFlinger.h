@@ -435,17 +435,18 @@ private:
                     eConsoleReleased = 1,
                     eConsoleAcquired = 2
                 };
-   volatile     int32_t                     mConsoleSignals;
+    volatile     int32_t                     mConsoleSignals;
 
-   // only written in the main thread, only read in other threads
-   volatile     int32_t                     mSecureFrameBuffer;
-   #ifdef SECOND_DISPLAY_SUPPORT
-   int                                      mTopOrientation;
-   #endif
+    // only written in the main thread, only read in other threads
+    volatile     int32_t                     mSecureFrameBuffer;
+    #ifdef SECOND_DISPLAY_SUPPORT
+    int                                      mTopOrientation;
+    #endif
 
-   //WO, mark surface init update
-   bool		mSurfaceInitUpdate;
-   bool         mSkipNextInitUpdate;
+    //WO, mark surface init update
+    bool		mSurfaceInitUpdate;
+    bool        mSkipNextInitUpdate;
+    int			mSystemBarHeight;
 };
 
 // ---------------------------------------------------------------------------
