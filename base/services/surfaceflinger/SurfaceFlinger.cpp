@@ -1227,33 +1227,33 @@ void SurfaceFlinger::handlePageFlip()
             mSurfaceInitUpdate = false;
             if (orientation ==  ISurfaceComposer::eOrientationDefault)
             {
-                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == /*35*/mSystemBarHeight))
-                {
-                    LOGI("===>Portrait0, Set init update flag<===\n");
-                    mSurfaceInitUpdate = true;    
-                }
-            }
-            else if (orientation ==  ISurfaceComposer::eOrientation180)
-            {
                 if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == (hw.bounds().right-/*35*/mSystemBarHeight)) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
                 {
                     LOGI("===>Portrait180, Set init update flag<===\n");
                     mSurfaceInitUpdate = true;    
                 }
             }
+            else if (orientation ==  ISurfaceComposer::eOrientation180)
+            {
+                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == /*35*/mSystemBarHeight))
+                {
+                    LOGI("===>Portrait0, Set init update flag<===\n");
+                    mSurfaceInitUpdate = true;    
+                }
+            }
             else if (orientation ==  ISurfaceComposer::eOrientation90)
             {
-                if ((mDirtyRegion.getBounds().top == /*35*/mSystemBarHeight) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+               if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == (hw.bounds().bottom-/*35*/mSystemBarHeight)) && (mDirtyRegion.getBounds().left == hw.bounds().left))
                 {
-                    LOGI("===>Lanscape90, Set init update flag<===\n");
+                    LOGI("===>Lanscape270, Set init update flag<===\n");
                     mSurfaceInitUpdate = true;    
                 }
             }
             else if (orientation ==  ISurfaceComposer::eOrientation270)
             {
-               if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == (hw.bounds().bottom-/*35*/mSystemBarHeight)) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+                if ((mDirtyRegion.getBounds().top == /*35*/mSystemBarHeight) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
                 {
-                    LOGI("===>Lanscape270, Set init update flag<===\n");
+                    LOGI("===>Lanscape90, Set init update flag<===\n");
                     mSurfaceInitUpdate = true;    
                 }
             }
