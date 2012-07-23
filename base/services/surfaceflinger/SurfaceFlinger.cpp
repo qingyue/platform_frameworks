@@ -1223,7 +1223,7 @@ void SurfaceFlinger::handlePageFlip()
         else
         {
             int orientation = graphicPlane(0).getOrientation();
-			LOGI("****** StatusBarH=%d ******\n",  mSystemBarHeight);
+			LOGI("****** StatusBarH=%d, system orientation=%d ******\n",  mSystemBarHeight, orientation);
             mSurfaceInitUpdate = false;
             if (orientation ==  ISurfaceComposer::eOrientationDefault)
             {
