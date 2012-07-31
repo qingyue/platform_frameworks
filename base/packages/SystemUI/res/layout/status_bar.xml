@@ -41,13 +41,25 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"/>  
             
+        <ImageButton android:id="@+id/go_home" 
+            android:layout_width="32px" 
+            android:layout_height="match_parent" 
+            android:layout_alignParentLeft="true"
+            android:gravity="center_vertical"
+            android:clickable="true"  
+            android:background="#c4c4c4"
+            android:src="@drawable/home_l" 
+            />  
+            
         <LinearLayout android:id="@+id/statusIcons"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:paddingRight="6dip"
             android:gravity="center_vertical"
-            android:orientation="horizontal"/>    
+            android:orientation="horizontal"/>
+        
+          
 
         <com.android.systemui.statusbar.Clock
             android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"

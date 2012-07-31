@@ -76,6 +76,11 @@ import com.android.server.am.BatteryStatsService;
 import com.android.systemui.R;
 import android.net.wimax.WimaxManagerConstants;
 
+import android.os.SystemClock;
+import android.os.ServiceManager;
+import android.view.IWindowManager;
+import android.view.KeyEvent;
+
 /**
  * This class contains all of the policy about which icons are installed in the status
  * bar at boot time.  It goes through the normal API for icons, even though it probably
@@ -591,6 +596,9 @@ public class StatusBarPolicy {
 			else if (action.equals(Intent.ACTION_HDMI_PLUG)){
                 updateHdmi(intent);
             }
+            else if (action.equals(Intent.ACTION_ICONKEY_CHANGED)) {
+                updateIconKeyAction(intent);
+            }
         }
     };
 
@@ -607,6 +615,9 @@ public class StatusBarPolicy {
 
         // battery
         mService.setIcon("battery", com.android.internal.R.drawable.stat_sys_battery_unknown, 0);
+
+        //home
+        //mService.setIcon("home", R.drawable.home_l, 0);
 
         // phone_signal
         mPhone = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -633,12 +644,12 @@ public class StatusBarPolicy {
 
         // wimax
         //enable/disable wimax depending on the value in config.xml
-        boolean isWimaxEnabled = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_wimaxEnabled);
-        if (isWimaxEnabled) {
-            mService.setIcon("wimax", sWimaxDisconnectedImg, 0);
-            mService.setIconVisibility("wimax", false);
-        }
+        //boolean isWimaxEnabled = mContext.getResources().getBoolean(
+        //        com.android.internal.R.bool.config_wimaxEnabled);
+        //if (isWimaxEnabled) {
+        //    mService.setIcon("wimax", sWimaxDisconnectedImg, 0);
+        //    mService.setIconVisibility("wimax", false);
+        //}
 
         // TTY status
         mService.setIcon("tty",  R.drawable.stat_sys_tty_mode, 0);
@@ -711,6 +722,8 @@ public class StatusBarPolicy {
 
         filter.addAction(Intent.ACTION_HDMI_PLUG);        
         mContext.registerReceiver(mIntentReceiver, filter, null, mHandler);
+        
+        filter.addAction(Intent.ACTION_ICONKEY_CHANGED); 
 
         // load config to determine if to distinguish Hspa data icon
         try {
@@ -1511,6 +1524,31 @@ public class StatusBarPolicy {
                     closeLastBatteryView();
                 }
                 break;
+            }
+        }
+    }
+    
+    private final void updateIconKeyAction(Intent intent)
+    {
+        int keycode = intent.getIntExtra("keycode", -1);
+        IWindowManager wm = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+
+        if (keycode != -1) {
+            long now = SystemClock.uptimeMillis();
+
+            KeyEvent down = new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keycode, 0);
+            KeyEvent up = new KeyEvent(now, now, KeyEvent.ACTION_UP, keycode, 0);
+
+            try {
+                wm.injectKeyEvent(down, false);
+            }
+            catch (RemoteException e) {
+            }
+
+            try {
+                wm.injectKeyEvent(up, false);
+            }
+            catch (RemoteException e) {
             }
         }
     }
