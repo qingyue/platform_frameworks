@@ -82,6 +82,8 @@ import android.os.ServiceManager;
 import android.view.IWindowManager;
 import android.view.KeyEvent;
 
+import com.android.systemui.statusbar.StatusBarView;
+
 /**
  * This class contains all of the policy about which icons are installed in the status
  * bar at boot time.  It goes through the normal API for icons, even though it probably
@@ -599,7 +601,7 @@ public class StatusBarPolicy {
 			else if (action.equals(Intent.ACTION_HDMI_PLUG)){
                 updateHdmi(intent);
             }
-            else if (action.equals("android.intent.action.ICONKEY_CHANGED")) {
+            else if (action.equals(StatusBarView.ACTION_ICONKEY_HOME)) {
                 updateIconKeyAction(intent);
             }
         }
@@ -722,7 +724,7 @@ public class StatusBarPolicy {
 
         filter.addAction(Intent.ACTION_HDMI_PLUG);    
         
-        filter.addAction("android.intent.action.ICONKEY_CHANGED"); 
+        filter.addAction(StatusBarView.ACTION_ICONKEY_HOME); 
         mContext.registerReceiver(mIntentReceiver, filter, null, mHandler);
         
 

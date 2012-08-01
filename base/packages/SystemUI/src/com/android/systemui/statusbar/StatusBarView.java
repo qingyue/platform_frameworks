@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.android.systemui.R;
 
@@ -46,11 +47,12 @@ public class StatusBarView extends FrameLayout {
     FixedSizeDrawable mBackground;
     
     ImageButton mHomeButton;
+    ImageButton mRefreshButton;
     final Context mContext;
     
-    public static final int RESV_KEY_HOME = KeyEvent.KEYCODE_HOME;
+    public static final int KEY_HOME = KeyEvent.KEYCODE_HOME;
     
-    public static final String ACTION_ICONKEY_CHANGED = "android.intent.action.ICONKEY_CHANGED";
+    public static final String ACTION_ICONKEY_HOME = "android.intent.action.ICONKEY_HOME";
     
     public StatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -69,8 +71,10 @@ public class StatusBarView extends FrameLayout {
         mDate.setBackgroundDrawable(mBackground);
         
         mHomeButton = (ImageButton)findViewById(R.id.go_home);
+        mHomeButton.setOnTouchListener(homeOnTouch);
         
-        mHomeButton.setOnTouchListener(homeOnTouch);  
+        mRefreshButton = (ImageButton)findViewById(R.id.refresh);
+        mRefreshButton.setOnTouchListener(refreshOnTouch);
     }
 
     @Override
@@ -162,7 +166,7 @@ public class StatusBarView extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         
-        if(  (event.getX() > mHomeButton.getRight()) || (event.getX() < mHomeButton.getLeft())){        
+        if(  (event.getX() > mRefreshButton.getRight()) || (event.getX() < mHomeButton.getLeft())){        
                   return mService.interceptTouchEvent(event)      
                            ? true : super.onInterceptTouchEvent(event);       
                      }       
@@ -179,7 +183,7 @@ public class StatusBarView extends FrameLayout {
 
     private void sendKeyIntent(int keycode)
     {
-        Intent intent = new Intent(ACTION_ICONKEY_CHANGED);
+        Intent intent = new Intent(ACTION_ICONKEY_HOME);
         intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         intent.putExtra("keycode", keycode);
         sendIntent(intent);
@@ -193,7 +197,24 @@ public class StatusBarView extends FrameLayout {
             switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
             {
-                sendKeyIntent(RESV_KEY_HOME);
+                sendKeyIntent(KEY_HOME);
+            }
+                break;
+            }
+            return false;
+        }
+    };
+    
+    private OnTouchListener refreshOnTouch = new OnTouchListener()
+    {
+        
+        @Override
+        public boolean onTouch(View v, MotionEvent event)
+        {
+            switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+            {
+                Toast.makeText(mContext, "Refresh", Toast.LENGTH_LONG).show();
             }
                 break;
             }
