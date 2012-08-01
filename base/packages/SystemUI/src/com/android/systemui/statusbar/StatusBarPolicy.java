@@ -57,6 +57,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.util.Slog;
 import android.view.View;
 import android.view.ViewGroup;
@@ -537,6 +538,8 @@ public class StatusBarPolicy {
     // sync state
     // If sync is active the SyncActive icon is displayed. If sync is not active but
     // sync is failing the SyncFailing icon is displayed. Otherwise neither are displayed.
+    
+    
 
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
@@ -596,7 +599,7 @@ public class StatusBarPolicy {
 			else if (action.equals(Intent.ACTION_HDMI_PLUG)){
                 updateHdmi(intent);
             }
-            else if (action.equals(Intent.ACTION_ICONKEY_CHANGED)) {
+            else if (action.equals("android.intent.action.ICONKEY_CHANGED")) {
                 updateIconKeyAction(intent);
             }
         }
@@ -615,9 +618,6 @@ public class StatusBarPolicy {
 
         // battery
         mService.setIcon("battery", com.android.internal.R.drawable.stat_sys_battery_unknown, 0);
-
-        //home
-        //mService.setIcon("home", R.drawable.home_l, 0);
 
         // phone_signal
         mPhone = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -720,10 +720,11 @@ public class StatusBarPolicy {
         filter.addAction(WimaxManagerConstants.SIGNAL_LEVEL_CHANGED_ACTION);
         filter.addAction(WimaxManagerConstants.WIMAX_ENABLED_STATUS_CHANGED);
 
-        filter.addAction(Intent.ACTION_HDMI_PLUG);        
+        filter.addAction(Intent.ACTION_HDMI_PLUG);    
+        
+        filter.addAction("android.intent.action.ICONKEY_CHANGED"); 
         mContext.registerReceiver(mIntentReceiver, filter, null, mHandler);
         
-        filter.addAction(Intent.ACTION_ICONKEY_CHANGED); 
 
         // load config to determine if to distinguish Hspa data icon
         try {
@@ -1543,12 +1544,14 @@ public class StatusBarPolicy {
                 wm.injectKeyEvent(down, false);
             }
             catch (RemoteException e) {
+                Log.w(TAG, e);
             }
 
             try {
                 wm.injectKeyEvent(up, false);
             }
             catch (RemoteException e) {
+                Log.w(TAG, e);
             }
         }
     }

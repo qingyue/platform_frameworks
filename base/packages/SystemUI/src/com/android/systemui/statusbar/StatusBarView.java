@@ -50,6 +50,8 @@ public class StatusBarView extends FrameLayout {
     
     public static final int RESV_KEY_HOME = KeyEvent.KEYCODE_HOME;
     
+    public static final String ACTION_ICONKEY_CHANGED = "android.intent.action.ICONKEY_CHANGED";
+    
     public StatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -177,7 +179,7 @@ public class StatusBarView extends FrameLayout {
 
     private void sendKeyIntent(int keycode)
     {
-        Intent intent = new Intent(Intent.ACTION_ICONKEY_CHANGED);
+        Intent intent = new Intent(ACTION_ICONKEY_CHANGED);
         intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         intent.putExtra("keycode", keycode);
         sendIntent(intent);

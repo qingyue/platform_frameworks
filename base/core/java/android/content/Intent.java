@@ -5605,9 +5605,4 @@ public class Intent implements Parcelable, Cloneable {
 
         return intent;
     }
-    
-    /**
-     * @hide
-     */
-    public static final String ACTION_ICONKEY_CHANGED = "android.intent.action.ICONKEY_CHANGED";
 }
