@@ -19,9 +19,12 @@ package com.android.server;
 import com.android.internal.app.IBatteryStats;
 import com.android.internal.app.ShutdownThread;
 import com.android.server.am.BatteryStatsService;
+import com.android.internal.policy.impl.PhoneWindowManager;
 
 import android.app.ActivityManagerNative;
+import android.app.AlarmManager;
 import android.app.IActivityManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentQueryMap;
 import android.content.ContentResolver;
@@ -69,11 +72,13 @@ import static android.provider.Settings.System.STAY_ON_WHILE_PLUGGED_IN;
 import static android.provider.Settings.System.WINDOW_ANIMATION_SCALE;
 import static android.provider.Settings.System.TRANSITION_ANIMATION_SCALE;
 import static android.provider.Settings.System.XEC_DLS_CONTROL;
+import static com.android.internal.policy.impl.PhoneWindowManager.POWER_KEY_SUSPEND;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -98,16 +103,27 @@ class PowerManagerService extends IPowerManager.Stub
 
     //                       time since last state:               time since last event:
     // The short keylight delay comes from secure settings; this is the default.
-    private static final int SHORT_KEYLIGHT_DELAY_DEFAULT = 6000; // t+6 sec
-    private static final int MEDIUM_KEYLIGHT_DELAY = 15000;       // t+15 sec
-    private static final int LONG_KEYLIGHT_DELAY = 6000;        // t+6 sec
-    private static final int LONG_DIM_TIME = 7000;              // t+N-5 sec
+//    private static final int SHORT_KEYLIGHT_DELAY_DEFAULT = 6000; // t+6 sec
+//    private static final int MEDIUM_KEYLIGHT_DELAY = 15000;       // t+15 sec
+//    private static final int LONG_KEYLIGHT_DELAY = 6000;        // t+6 sec
+//    private static final int LONG_DIM_TIME = 7000;              // t+N-5 sec
+    
+    private static final int SHORT_KEYLIGHT_DELAY_DEFAULT = 1000;
+    private static final int MEDIUM_KEYLIGHT_DELAY = 1000; 
+    private static final int LONG_KEYLIGHT_DELAY = 1000;
+    private static final int LONG_DIM_TIME = 1000;
 
+    private static final String ACTION_DEVICE_SHUTDOWN =
+            "com.android.server.action.DEVICE_SHUTDOWN";
+    
     // How long to wait to debounce light sensor changes.
     private static final int LIGHT_SENSOR_DELAY = 2000;
 
     // For debouncing the proximity sensor.
     private static final int PROXIMITY_SENSOR_DELAY = 1000;
+    
+    // For shutdown the device.
+    private static final int DEFAULT_POWEROFF_TIMEOUT = 30 * 60 * 1000;
 
     // trigger proximity if distance is less than 5 cm
     private static final float PROXIMITY_THRESHOLD = 5.0f;
@@ -161,6 +177,9 @@ class PowerManagerService extends IPowerManager.Stub
     private final int MY_UID;
     private final int MY_PID;
 
+    private PendingIntent mPendingIntent = null;
+    private AlarmManager mAlarmManager;
+    private static PowerManager.WakeLock sCpuWakeLock;
     private boolean mDoneBooting = false;
     private boolean mBootCompleted = false;
     private int mStayOnConditions = 0;
@@ -402,6 +421,39 @@ class PowerManagerService extends IPowerManager.Stub
             dockStateChanged(state);
         }
     }
+   
+    public static void acquireCpuWakeLock(Context context) {
+        if (sCpuWakeLock != null) {
+            return;
+        }
+
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
+        sCpuWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "AlarmClock");
+        sCpuWakeLock.acquire();
+    }
+
+    public static void releaseCpuLock() {
+        if (sCpuWakeLock != null) {
+            sCpuWakeLock.release();
+            sCpuWakeLock = null;
+        }
+    }
+    
+    private final class ShutdownReceiver extends BroadcastReceiver {
+        public void onReceive(Context arg0, Intent arg1) {
+            // TODO Auto-generated method stub
+
+            acquireCpuWakeLock(arg0);
+            Intent intent = new Intent(Intent.ACTION_REQUEST_SHUTDOWN);
+            intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+            Slog.d(TAG, "----- Receiver Shutdown Timeout ----- ");
+        }
+
+    }
 
     /**
      * Set the setting that determines whether the device stays on when plugged in.
@@ -497,6 +549,7 @@ class PowerManagerService extends IPowerManager.Stub
     }
 
     private ContentQueryMap mSettings;
+
 
     void init(Context context, LightsService lights, IActivityManager activity,
             BatteryService battery) {
@@ -637,6 +690,10 @@ class PowerManagerService extends IPowerManager.Stub
         filter = new IntentFilter();
         filter.addAction(Intent.ACTION_DOCK_EVENT);
         mContext.registerReceiver(new DockReceiver(), filter);
+        filter = new IntentFilter();
+        filter.addAction(ACTION_DEVICE_SHUTDOWN);
+        mContext.registerReceiver(new ShutdownReceiver(), filter);
+
 
         // Listen for secure settings changes
         mContext.getContentResolver().registerContentObserver(
@@ -1209,6 +1266,7 @@ class PowerManagerService extends IPowerManager.Stub
                     {
                         case SCREEN_BRIGHT:
                             when = now + mKeylightDelay;
+
                             break;
                         case SCREEN_DIM:
                             if (mDimDelay >= 0) {
@@ -1261,7 +1319,32 @@ class PowerManagerService extends IPowerManager.Stub
                         : -1;
                 mHandler.postAtTime(mTimeoutTask, when);
                 mNextTimeout = when; // for debugging
+
             }
+        }
+    }
+    
+    private void cancelShutdownTimer() {
+        if (mPendingIntent != null) {
+            mAlarmManager.cancel(mPendingIntent);
+            Slog.d(TAG, "------------------- Cancel shutdown timer -------------------");
+            mPendingIntent = null;
+        }
+    }
+
+    private void startShutdownTimer() {
+        if (mPendingIntent == null) {
+            mAlarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+
+            Intent intent = new Intent(ACTION_DEVICE_SHUTDOWN);
+            intent.addFlags(Intent.FLAG_FROM_BACKGROUND);
+            Date t = new Date();
+            t.setTime(java.lang.System.currentTimeMillis() + DEFAULT_POWEROFF_TIMEOUT);
+//            t.setTime(java.lang.System.currentTimeMillis() + 1 * 60 * 1000);
+            PendingIntent pi = mPendingIntent = PendingIntent.getBroadcast(mContext, 0, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+            mAlarmManager.set(AlarmManager.RTC_WAKEUP, t.getTime(), pi);
+            Slog.d(TAG, "------------------- Start shutdown timer -------------------");
         }
     }
 
@@ -1272,11 +1355,12 @@ class PowerManagerService extends IPowerManager.Stub
     }
 
     private class TimeoutTask implements Runnable
-    {
+ {
         int nextState; // access should be synchronized on mLocks
+
         long remainingTimeoutOverride;
-        public void run()
-        {
+
+        public void run() {
             synchronized (mLocks) {
                 if (mSpew) {
                     Slog.d(TAG, "user activity timeout timed out nextState=" + this.nextState);
@@ -1291,8 +1375,7 @@ class PowerManagerService extends IPowerManager.Stub
 
                 long now = SystemClock.uptimeMillis();
 
-                switch (this.nextState)
-                {
+                switch (this.nextState) {
                     case SCREEN_BRIGHT:
                         if (mDimDelay >= 0) {
                             setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_DIM);
@@ -1302,6 +1385,23 @@ class PowerManagerService extends IPowerManager.Stub
                         setTimeoutLocked(now, remainingTimeoutOverride, SCREEN_OFF);
                         break;
                 }
+            }
+            if (mUserState == SCREEN_DIM) {
+//                int timeout = Settings.System.getInt(mContext.getContentResolver(),
+//                        SCREEN_OFF_TIMEOUT, -1);
+//                if (mContext != null && ActivityManagerNative.isSystemReady()
+//                        && timeout >= DEFAULT_POWEROFF_TIMEOUT) {
+//                    Slog.d(TAG, "--- ACTION_REQUEST_SHUTDOWN ---");
+//                    Intent intent = new Intent(Intent.ACTION_REQUEST_SHUTDOWN);
+//                    intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    mContext.startActivity(intent);
+//                    return;
+//                }
+//                if (timeout >= 60 * 1000) {
+//                    PhoneWindowManager.writeContent("/sys/power/power_mode", POWER_KEY_SUSPEND);
+//                }
+                startShutdownTimer();
             }
         }
     }
@@ -1381,7 +1481,6 @@ class PowerManagerService extends IPowerManager.Stub
                 }
                 if (value == 1) {
                     mScreenOnStart = SystemClock.uptimeMillis();
-
                     policy.screenTurnedOn();
                     try {
                         ActivityManagerNative.getDefault().wakingUp();
@@ -2315,7 +2414,9 @@ class PowerManagerService extends IPowerManager.Stub
                 }
             }
         }
-
+        if ((mUserActivityAllowed && !mProximitySensorActive)) {
+            cancelShutdownTimer();
+        }
         if (mPolicy != null) {
             mPolicy.userActivity();
         }

@@ -6544,19 +6544,19 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
     }
 
     private void makeBlink() {
-        if (!mCursorVisible || !isTextEditable()) {
-            if (mBlink != null) {
-                mBlink.removeCallbacks(mBlink);
-            }
+        //if (!mCursorVisible || !isTextEditable()) {
+        //    if (mBlink != null) {
+        //        mBlink.removeCallbacks(mBlink);
+        //    }
 
-            return;
-        }
+        //    return;
+        //}
 
-        if (mBlink == null)
-            mBlink = new Blink(this);
+        //if (mBlink == null)
+        //    mBlink = new Blink(this);
 
-        mBlink.removeCallbacks(mBlink);
-        mBlink.postAtTime(mBlink, mShowCursor + BLINK);
+        //mBlink.removeCallbacks(mBlink);
+        //mBlink.postAtTime(mBlink, mShowCursor + BLINK);
     }
 
     /**

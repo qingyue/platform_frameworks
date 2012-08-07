@@ -17,15 +17,19 @@
 package com.android.systemui.statusbar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.android.systemui.R;
 
@@ -42,8 +46,17 @@ public class StatusBarView extends FrameLayout {
     View mDate;
     FixedSizeDrawable mBackground;
     
+    ImageButton mHomeButton;
+    ImageButton mRefreshButton;
+    final Context mContext;
+    
+    public static final int KEY_HOME = KeyEvent.KEYCODE_HOME;
+    
+    public static final String ACTION_ICONKEY_HOME = "android.intent.action.ICONKEY_HOME";
+    
     public StatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
     }
 
     @Override
@@ -56,6 +69,12 @@ public class StatusBarView extends FrameLayout {
         mBackground = new FixedSizeDrawable(mDate.getBackground());
         mBackground.setFixedBounds(0, 0, 0, 0);
         mDate.setBackgroundDrawable(mBackground);
+        
+        mHomeButton = (ImageButton)findViewById(R.id.go_home);
+        mHomeButton.setOnTouchListener(homeOnTouch);
+        
+        mRefreshButton = (ImageButton)findViewById(R.id.refresh);
+        mRefreshButton.setOnTouchListener(refreshOnTouch);
     }
 
     @Override
@@ -146,8 +165,61 @@ public class StatusBarView extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        return mService.interceptTouchEvent(event)
-                ? true : super.onInterceptTouchEvent(event);
+        
+        if(  (event.getX() > mRefreshButton.getRight()) || (event.getX() < mHomeButton.getLeft())){        
+                  return mService.interceptTouchEvent(event)      
+                           ? true : super.onInterceptTouchEvent(event);       
+                     }       
+             return false; 
+        
+//        return mService.interceptTouchEvent(event)
+//                ? true : super.onInterceptTouchEvent(event);
     }
+    
+    void sendIntent(Intent intent)
+    {
+        mContext.sendBroadcast(intent);
+    }
+
+    private void sendKeyIntent(int keycode)
+    {
+        Intent intent = new Intent(ACTION_ICONKEY_HOME);
+        intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+        intent.putExtra("keycode", keycode);
+        sendIntent(intent);
+    }
+
+    private OnTouchListener homeOnTouch = new OnTouchListener()
+    {
+        // @Override
+        public boolean onTouch(View v, MotionEvent event)
+        {
+            switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+            {
+                sendKeyIntent(KEY_HOME);
+            }
+                break;
+            }
+            return false;
+        }
+    };
+    
+    private OnTouchListener refreshOnTouch = new OnTouchListener()
+    {
+        
+        @Override
+        public boolean onTouch(View v, MotionEvent event)
+        {
+            switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+            {
+                Toast.makeText(mContext, "Refresh", Toast.LENGTH_LONG).show();
+            }
+                break;
+            }
+            return false;
+        }
+    };
 }
 

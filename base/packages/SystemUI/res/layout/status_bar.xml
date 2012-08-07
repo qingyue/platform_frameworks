@@ -18,100 +18,126 @@
 */
 -->
 
-<!--    android:background="@drawable/status_bar_closed_default_background" -->
-<com.android.systemui.statusbar.StatusBarView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- android:background="@drawable/status_bar_closed_default_background" -->
+<com.android.systemui.statusbar.StatusBarView xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/statusbar_background"
-    android:orientation="vertical"
-    android:focusable="true"
     android:descendantFocusability="afterDescendants"
-    >
+    android:focusable="true"
+    android:orientation="vertical" >
 
-    <LinearLayout android:id="@+id/icons"
+    <LinearLayout
+        android:id="@+id/icons"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
-            
-        <com.android.systemui.statusbar.IconMerger android:id="@+id/notificationIcons"
+        android:orientation="horizontal" >
+
+        <com.android.systemui.statusbar.IconMerger
+            android:id="@+id/notificationIcons"
             android:layout_width="0dip"
-            android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:paddingLeft="6dip"
+            android:layout_weight="1"
             android:gravity="center_vertical"
-            android:orientation="horizontal"/>  
-            
-        <LinearLayout android:id="@+id/statusIcons"
+            android:orientation="horizontal"
+            android:paddingLeft="6dip" />
+
+        <ImageButton
+            android:id="@+id/go_home"
+            android:layout_width="60px"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/status_bar_button"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/home_l" />
+
+        <ImageButton
+            android:id="@+id/refresh"
+            android:layout_width="60px"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/status_bar_button"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:src="@drawable/refresh" />
+
+        <LinearLayout
+            android:id="@+id/statusIcons"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:paddingRight="6dip"
             android:gravity="center_vertical"
-            android:orientation="horizontal"/>    
+            android:orientation="horizontal"
+            android:paddingRight="6dip" />
 
         <com.android.systemui.statusbar.Clock
-            android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:singleLine="true"
-            android:paddingRight="6dip"
             android:gravity="center_vertical|left"
-			android:textColor="#ff000000"
-            />
+            android:paddingRight="6dip"
+            android:singleLine="true"
+            android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
+            android:textColor="#ff000000" />
     </LinearLayout>
-        
-    <LinearLayout android:id="@+id/ticker"
+
+    <LinearLayout
+        android:id="@+id/ticker"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="6dip"
         android:animationCache="false"
-        android:orientation="horizontal" >
-        <ImageSwitcher android:id="@+id/tickerIcon"
+        android:orientation="horizontal"
+        android:paddingLeft="6dip" >
+
+        <ImageSwitcher
+            android:id="@+id/tickerIcon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="8dip"
-            >
+            android:layout_marginRight="8dip" >
+
             <com.android.systemui.statusbar.AnimatedImageView
                 android:layout_width="25dip"
-                android:layout_height="25dip"
-                />
+                android:layout_height="25dip" />
+
             <com.android.systemui.statusbar.AnimatedImageView
                 android:layout_width="25dip"
-                android:layout_height="25dip"
-                />
+                android:layout_height="25dip" />
         </ImageSwitcher>
-        <com.android.systemui.statusbar.TickerView android:id="@+id/tickerText"
+
+        <com.android.systemui.statusbar.TickerView
+            android:id="@+id/tickerText"
             android:layout_width="0dip"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:paddingTop="2dip"
-            android:paddingRight="10dip">
+            android:layout_weight="1"
+            android:paddingRight="10dip"
+            android:paddingTop="2dip" >
+
             <TextView
-                android:textAppearance="@*android:style/TextAppearance.StatusBar.Ticker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-				android:textColor="#000000"
-                />
-            <TextView
                 android:textAppearance="@*android:style/TextAppearance.StatusBar.Ticker"
+                android:textColor="#000000" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-				android:textColor="#000000"
-                />
+                android:textAppearance="@*android:style/TextAppearance.StatusBar.Ticker"
+                android:textColor="#000000" />
         </com.android.systemui.statusbar.TickerView>
     </LinearLayout>
 
-    <com.android.systemui.statusbar.DateView android:id="@+id/date"
-        android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
+    <com.android.systemui.statusbar.DateView
+        android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:singleLine="true"
+        android:background="@drawable/statusbar_background"
         android:gravity="center_vertical|left"
         android:paddingLeft="6px"
         android:paddingRight="6px"
-		android:textColor="#000000"
-        android:background="@drawable/statusbar_background"
-        />
+        android:singleLine="true"
+        android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
+        android:textColor="#000000" />
+
 </com.android.systemui.statusbar.StatusBarView>

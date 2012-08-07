@@ -1014,10 +1014,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             loadBooleanSetting(stmt, Settings.System.DIM_SCREEN,
                     R.bool.def_dim_screen);
             loadSetting(stmt, Settings.System.STAY_ON_WHILE_PLUGGED_IN,
-                    "1".equals(SystemProperties.get("ro.kernel.qemu")) ? 1 : 0);
+                    "1".equals(SystemProperties.get("ro.kernel.qemu")) ? 1 : 3);
             loadIntegerSetting(stmt, Settings.System.SCREEN_OFF_TIMEOUT,
                     R.integer.def_screen_off_timeout);
-    
+            loadIntegerSetting(stmt, Settings.System.SCREEN_OFF_TIMEOUT_BACKUP,
+                    R.integer.def_screen_off_timeout);
+            
             // Set default cdma emergency tone
             loadSetting(stmt, Settings.System.EMERGENCY_TONE, 0);
 

@@ -75,6 +75,9 @@
 #define UI_FULL_MODE 0x0064
 #define SPECIAL_MODE_MASK 0x0700
 
+#define ANDROID_STATUSBAR_HEIGHT_160  35
+#define ANDROID_STATUSBAR_HEIGHT_240  53
+
 namespace android {
 // ---------------------------------------------------------------------------
 
@@ -97,7 +100,7 @@ SurfaceFlinger::SurfaceFlinger()
         mFreezeDisplayTime(0),
         mDebugRegion(0),
         mDebugBackground(0),
-	mDebugFps(0),
+		mDebugFps(0),
         mDebugInSwapBuffers(0),
         mLastSwapBufferTime(0),
         mDebugInTransaction(0),
@@ -105,12 +108,13 @@ SurfaceFlinger::SurfaceFlinger()
         mBootFinished(false),
         mConsoleSignals(0),
         mSecureFrameBuffer(0),
-	mSurfaceInitUpdate(false),
+		mSurfaceInitUpdate(false),
         mSkipNextInitUpdate(false)
 {
     //fix the maximum layer is 10;
     mRegionsDirtyReglist = new DirtyRegList[MAX_LAYER];
     mNeedspecialupdate   = 0;
+	mSystemBarHeight     = ANDROID_STATUSBAR_HEIGHT_160; //DPI 160
     init();
 }
 
@@ -255,6 +259,25 @@ status_t SurfaceFlinger::readyToRun()
     dcblk->fps          = hw.getRefreshRate();
     dcblk->density      = hw.getDensity();
 
+	//Set Android system ar height
+	const float dpyDensity = hw.getDensity();
+    const int dpi = (int)(dpyDensity * 160.0f);
+	LOGI("****** Screen DPI =%d ******\n", dpi);
+	if (dpi == 240)
+	{
+		mSystemBarHeight = ANDROID_STATUSBAR_HEIGHT_240;
+	}
+	else if (dpi == 160)
+	{
+		mSystemBarHeight = ANDROID_STATUSBAR_HEIGHT_160;
+	}
+	else
+	{
+		mSystemBarHeight = (int)(dpyDensity * ANDROID_STATUSBAR_HEIGHT_160 + 0.5);
+	}
+
+	LOGI("****** Android StatusbarH =%d ******\n", mSystemBarHeight);
+
     // Initialize OpenGL|ES
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     glPixelStorei(GL_PACK_ALIGNMENT, 4); 
@@ -281,7 +304,7 @@ status_t SurfaceFlinger::readyToRun()
     glLoadIdentity();
     glOrthof(0, w, h, 0, 0, 1);
 
-   LayerDim::initDimmer(this, w, h);
+    LayerDim::initDimmer(this, w, h);
 
     mReadyToRunBarrier.open();
 
@@ -576,6 +599,7 @@ void SurfaceFlinger::releaseDirtyGroup()
 
 // get parameters from client to see if we need to use special update or not.
 void SurfaceFlinger::EinkOptPostFramebuffer()
+
 {
     bool bNeedPartialupdate = false;
     Region pInvalidRegion = mInvalidRegion;
@@ -647,7 +671,7 @@ void SurfaceFlinger::EinkOptPostFramebuffer()
         {
             allrectList.add(rectList[j]);
             allupdatemode.add(UI_DEFAULT_MODE);
-            LOGI("EOPostFB rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d \n",allnum, allrectList[allnum].left, allrectList[allnum].top,
+            LOGI("EOPostFB rect %d  left=%d, top=%d, right=%d, bottom=%d mode=%d\n",allnum, allrectList[allnum].left, allrectList[allnum].top,
                   allrectList[allnum].right,allrectList[allnum].bottom,UI_DEFAULT_MODE);
             allnum++;
         }
@@ -1174,7 +1198,7 @@ void SurfaceFlinger::handlePageFlip()
             const Region reminder(screenRegion.subtract(visibleRegion));
             if (reminder.isEmpty()) {
                 // fullscreen candidate!
-                LOGI("--->BYPASS found fullscrfeen candidate!\n");
+                LOGI("--->BYPASS found fullscreen candidate!\n");
                 bypassLayer = candidate;
             }
         }
@@ -1199,37 +1223,37 @@ void SurfaceFlinger::handlePageFlip()
         else
         {
             int orientation = graphicPlane(0).getOrientation();
-            LOGI("--->Set default update flag, %d<---\n", orientation);
+			LOGI("****** StatusBarH=%d, system orientation=%d ******\n",  mSystemBarHeight, orientation);
             mSurfaceInitUpdate = false;
             if (orientation ==  ISurfaceComposer::eOrientationDefault)
             {
-                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == 35))
-                {
-                    LOGI("===>Portrait0, Set init update flag<===\n");
-                    mSurfaceInitUpdate = true;    
-                }
-            }
-            else if (orientation ==  ISurfaceComposer::eOrientation180)
-            {
-                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == (hw.bounds().right-35)) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == (hw.bounds().right-/*35*/mSystemBarHeight)) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
                 {
                     LOGI("===>Portrait180, Set init update flag<===\n");
                     mSurfaceInitUpdate = true;    
                 }
             }
+            else if (orientation ==  ISurfaceComposer::eOrientation180)
+            {
+                if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == /*35*/mSystemBarHeight))
+                {
+                    LOGI("===>Portrait0, Set init update flag<===\n");
+                    mSurfaceInitUpdate = true;    
+                }
+            }
             else if (orientation ==  ISurfaceComposer::eOrientation90)
             {
-                if ((mDirtyRegion.getBounds().top == 35) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+               if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == (hw.bounds().bottom-/*35*/mSystemBarHeight)) && (mDirtyRegion.getBounds().left == hw.bounds().left))
                 {
-                    LOGI("===>Lanscape90, Set init update flag<===\n");
+                    LOGI("===>Lanscape270, Set init update flag<===\n");
                     mSurfaceInitUpdate = true;    
                 }
             }
             else if (orientation ==  ISurfaceComposer::eOrientation270)
             {
-               if ((mDirtyRegion.getBounds().top == hw.bounds().top) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == (hw.bounds().bottom-35)) && (mDirtyRegion.getBounds().left == hw.bounds().left))
+                if ((mDirtyRegion.getBounds().top == /*35*/mSystemBarHeight) && (mDirtyRegion.getBounds().right == hw.bounds().right) && (mDirtyRegion.getBounds().bottom == hw.bounds().bottom) && (mDirtyRegion.getBounds().left == hw.bounds().left))
                 {
-                    LOGI("===>Lanscape270, Set init update flag<===\n");
+                    LOGI("===>Lanscape90, Set init update flag<===\n");
                     mSurfaceInitUpdate = true;    
                 }
             }

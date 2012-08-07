@@ -28,6 +28,9 @@ import static android.net.wifi.WifiManager.WIFI_AP_STATE_DISABLING;
 import static android.net.wifi.WifiManager.WIFI_AP_STATE_ENABLED;
 import static android.net.wifi.WifiManager.WIFI_AP_STATE_ENABLING;
 import static android.net.wifi.WifiManager.WIFI_AP_STATE_FAILED;
+import static android.provider.Settings.System.DEFAULT_SCREEN_OFF_TIMEOUT_WIFI;
+import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
+import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT_BACKUP;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -66,6 +69,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.WorkSource;
 import android.provider.Settings;
+import android.util.Log;
 import android.util.Slog;
 import android.text.TextUtils;
 
@@ -295,9 +299,23 @@ public class WifiService extends IWifiManager.Stub {
         /* Start if Wi-Fi is enabled or the saved state indicates Wi-Fi was on */
         boolean wifiEnabled = !isAirplaneModeOn()
                 && (getPersistedWifiEnabled() || testAndClearWifiSavedState());
-        Slog.i(TAG, "WifiService starting up with Wi-Fi " +
-                (wifiEnabled ? "enabled" : "disabled"));
+        Slog.i(TAG, "WifiService starting up with Wi-Fi " + (wifiEnabled ? "enabled" : "disabled"));
         setWifiEnabled(wifiEnabled);
+        if (wifiEnabled) {
+            int timeout = Settings.System.getInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT,
+                    -1);
+            Settings.System.putInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT_BACKUP,
+                    timeout);// save screen_off_timeout to
+                             // screen_off_timeout_backup
+            Log.d(TAG,
+                    "Set SCREEN_OFF_TIMEOUT_BACKUP is "
+                            + Settings.System.getInt(mContext.getContentResolver(),
+                                    SCREEN_OFF_TIMEOUT_BACKUP, -1));
+            if (timeout < DEFAULT_SCREEN_OFF_TIMEOUT_WIFI) {
+                Settings.System.putInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT,
+                        DEFAULT_SCREEN_OFF_TIMEOUT_WIFI);
+            }
+        }
     }
 
     private void updateTetherState(ArrayList<String> available, ArrayList<String> tethered) {
@@ -422,7 +440,7 @@ public class WifiService extends IWifiManager.Stub {
 
         return true;
     }
-
+    
     /**
      * Enables/disables Wi-Fi synchronously.
      * @param enable {@code true} to turn Wi-Fi on, {@code false} to turn it off.
@@ -1770,7 +1788,11 @@ public class WifiService extends IWifiManager.Stub {
                     }
                 }
                 mWifiStateTracker.setBluetoothScanMode(isBluetoothPlaying);
-
+            } else if (action.equals(Intent.ACTION_SHUTDOWN)) {
+                int timeout = Settings.System.getInt(mContext.getContentResolver(),
+                        SCREEN_OFF_TIMEOUT_BACKUP, -1);
+                Settings.System.putInt(mContext.getContentResolver(), SCREEN_OFF_TIMEOUT, timeout);
+                Slog.w(TAG, "Writing screen_off_timeout " + timeout + " before shutdown...");
             } else {
                 return;
             }
@@ -1935,6 +1957,7 @@ public class WifiService extends IWifiManager.Stub {
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        intentFilter.addAction(Intent.ACTION_SHUTDOWN);
         intentFilter.addAction(ACTION_DEVICE_IDLE);
         intentFilter.addAction(BluetoothA2dp.ACTION_SINK_STATE_CHANGED);
         mContext.registerReceiver(mReceiver, intentFilter);

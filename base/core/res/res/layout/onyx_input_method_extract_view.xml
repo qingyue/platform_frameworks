@@ -6,7 +6,7 @@
     android:background="@android:drawable/extract_edit_text"
     android:gravity="top"
     android:inputType="text"
-    android:minLines="1"
+    android:lines="2"
     android:scrollbars="vertical" >
 
 </android.inputmethodservice.ExtractEditText>
