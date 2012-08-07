@@ -57,6 +57,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.util.Slog;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,13 @@ import com.android.server.am.BatteryStatsService;
 
 import com.android.systemui.R;
 import android.net.wimax.WimaxManagerConstants;
+
+import android.os.SystemClock;
+import android.os.ServiceManager;
+import android.view.IWindowManager;
+import android.view.KeyEvent;
+
+import com.android.systemui.statusbar.StatusBarView;
 
 /**
  * This class contains all of the policy about which icons are installed in the status
@@ -532,6 +540,8 @@ public class StatusBarPolicy {
     // sync state
     // If sync is active the SyncActive icon is displayed. If sync is not active but
     // sync is failing the SyncFailing icon is displayed. Otherwise neither are displayed.
+    
+    
 
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
@@ -591,6 +601,9 @@ public class StatusBarPolicy {
 			else if (action.equals(Intent.ACTION_HDMI_PLUG)){
                 updateHdmi(intent);
             }
+            else if (action.equals(StatusBarView.ACTION_ICONKEY_HOME)) {
+                updateIconKeyAction(intent);
+            }
         }
     };
 
@@ -633,12 +646,12 @@ public class StatusBarPolicy {
 
         // wimax
         //enable/disable wimax depending on the value in config.xml
-        boolean isWimaxEnabled = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_wimaxEnabled);
-        if (isWimaxEnabled) {
-            mService.setIcon("wimax", sWimaxDisconnectedImg, 0);
-            mService.setIconVisibility("wimax", false);
-        }
+        //boolean isWimaxEnabled = mContext.getResources().getBoolean(
+        //        com.android.internal.R.bool.config_wimaxEnabled);
+        //if (isWimaxEnabled) {
+        //    mService.setIcon("wimax", sWimaxDisconnectedImg, 0);
+        //    mService.setIconVisibility("wimax", false);
+        //}
 
         // TTY status
         mService.setIcon("tty",  R.drawable.stat_sys_tty_mode, 0);
@@ -709,8 +722,11 @@ public class StatusBarPolicy {
         filter.addAction(WimaxManagerConstants.SIGNAL_LEVEL_CHANGED_ACTION);
         filter.addAction(WimaxManagerConstants.WIMAX_ENABLED_STATUS_CHANGED);
 
-        filter.addAction(Intent.ACTION_HDMI_PLUG);        
+        filter.addAction(Intent.ACTION_HDMI_PLUG);    
+        
+        filter.addAction(StatusBarView.ACTION_ICONKEY_HOME); 
         mContext.registerReceiver(mIntentReceiver, filter, null, mHandler);
+        
 
         // load config to determine if to distinguish Hspa data icon
         try {
@@ -1511,6 +1527,33 @@ public class StatusBarPolicy {
                     closeLastBatteryView();
                 }
                 break;
+            }
+        }
+    }
+    
+    private final void updateIconKeyAction(Intent intent)
+    {
+        int keycode = intent.getIntExtra("keycode", -1);
+        IWindowManager wm = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+
+        if (keycode != -1) {
+            long now = SystemClock.uptimeMillis();
+
+            KeyEvent down = new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keycode, 0);
+            KeyEvent up = new KeyEvent(now, now, KeyEvent.ACTION_UP, keycode, 0);
+
+            try {
+                wm.injectKeyEvent(down, false);
+            }
+            catch (RemoteException e) {
+                Log.w(TAG, e);
+            }
+
+            try {
+                wm.injectKeyEvent(up, false);
+            }
+            catch (RemoteException e) {
+                Log.w(TAG, e);
             }
         }
     }

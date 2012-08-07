@@ -772,7 +772,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedDialog.getWindow().setAttributes(mExpandedParams);
         mTrackingView.setVisibility(View.GONE);
         mExpandedView.setVisibility(View.GONE);
-
+        
         if ((mDisabled & StatusBarManager.DISABLE_NOTIFICATION_ICONS) == 0) {
             setNotificationIconVisibility(true, com.android.internal.R.anim.fade_in);
         }
